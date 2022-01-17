@@ -1,3 +1,42 @@
 {
-  "TODO": "Complete this Schema! (Make sure to delete this Key/Value Pair!"
+  "namespace": "com.udacity",
+  "type": "record",
+  "name": "arrival.value",
+  "fields": [
+    {
+      "name": "station_id",
+      "type": "long"
+    },
+    {
+      "name": "train_id",
+      "type": "long"
+    },
+    {
+      "name": "direction",
+      "type": ""
+    },
+    {
+      "name": "line",
+      "type": ""
+    },
+    {
+      "name": "train_status",
+      "type": ""
+    },
+    {
+      "name": "prev_station_id",
+      "type": "long"
+    },
+    {
+      "name": "prev_direction",
+      "type": ""
+    }
+  ]
 }
+
+
+
+
+
+
+

@@ -7,7 +7,6 @@ from confluent_kafka import avro
 from models import Turnstile
 from models.producer import Producer
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -19,16 +18,16 @@ class Station(Producer):
     #
     # TODO: Define this value schema in `schemas/station_value.json, then uncomment the below
     #
-    #value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
+    value_schema = avro.load(f"{Path(__file__).parents[0]}/schemas/arrival_value.json")
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
         self.name = name
         station_name = (
             self.name.lower()
-            .replace("/", "_and_")
-            .replace(" ", "_")
-            .replace("-", "_")
-            .replace("'", "")
+                .replace("/", "_and_")
+                .replace(" ", "_")
+                .replace("-", "_")
+                .replace("'", "")
         )
 
         #
@@ -37,11 +36,11 @@ class Station(Producer):
         # replicas
         #
         #
-        topic_name = f"{station_name}" # TODO: Come up with a better topic name
+        topic_name = f"{station_name}"  # TODO: Come up with a better topic name
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
-            # TODO: value_schema=Station.value_schema, # TODO: Uncomment once schema is defined
+            value_schema=Station.value_schema,
             # TODO: num_partitions=???,
             # TODO: num_replicas=???,
         )
@@ -54,7 +53,6 @@ class Station(Producer):
         self.b_train = None
         self.turnstile = Turnstile(self)
 
-
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
         #
@@ -63,17 +61,13 @@ class Station(Producer):
         #
         #
         logger.info("arrival kafka integration incomplete - skipping")
-        #self.producer.produce(
-        #    topic=self.topic_name,
-        #    key={"timestamp": self.time_millis()},
-        #    value={
-        #        #
-        #        #
-        #        # TODO: Configure this
-        #        #
-        #        #
-        #    },
-        #)
+        self.producer.produce(
+            topic=self.topic_name,
+            key={"timestamp": self.time_millis()},
+            value={
+
+            },
+        )
 
     def __str__(self):
         return "Station | {:^5} | {:<30} | Direction A: | {:^5} | departing to {:<30} | Direction B: | {:^5} | departing to {:<30} | ".format(
