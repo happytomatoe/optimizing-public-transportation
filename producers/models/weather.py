@@ -27,7 +27,7 @@ class Weather(Producer):
         "status", "sunny partly_cloudy cloudy windy precipitation", start=0
     )
 
-    rest_proxy_url = "https://localhost:8082"
+    rest_proxy_url = "http://localhost:8082"
 
     key_schema = None
     value_schema = None
@@ -78,28 +78,23 @@ class Weather(Producer):
                                                                     rounding=decimal.ROUND_DOWN),
             "status": self.status.name
         }
-        value_bytes = BytesIO()
-        fastavro.schemaless_writer(value_bytes, fastavro.parse_schema(Weather.value_schema), value)
-
-        key_bytes = BytesIO()
-        fastavro.schemaless_writer(key_bytes, fastavro.parse_schema(Weather.key_schema), key)
-        print(f"Value={base64.b64encode(value_bytes.getvalue())}")
 
         request = {
             "key_schema": json.dumps(Weather.key_schema),
             "value_schema": json.dumps(Weather.value_schema),
             "records": [
                 {
-                    "key": base64.b64encode(key_bytes.getvalue()).decode('ascii'),
-                    "value":  base64.b64encode(value_bytes.getvalue()).decode('ascii')
+                    "key": key,
+                    "value":  value
                 }
             ]
         }
-        logger.info("Request {}", request)
+        request_string = json.dumps(request, ensure_ascii=False, default=str)
+        logger.info(f"Request { request_string}")
         resp = requests.post(
             f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
-            headers={"Content-Type": "application/vnd.kafka.binary.v2+json"},
-            data=json.dumps(request),
+            headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
+            data=request_string,
         )
         logger.info("response from server %s", resp.content)
         resp.raise_for_status()
