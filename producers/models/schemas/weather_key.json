@@ -4,18 +4,8 @@
   "name": "weather.key",
   "fields": [
     {
-      "name": "temperature",
-      "type": {
-        "type": "bytes",
-        "logicalType": "decimal",
-        "precision": 4,
-        "scale": 2
-      }
-    },
-    {
-      "name": "status",
-      "type": "string"
+      "name": "timestamp",
+      "type": "long"
     }
   ]
 }
-
