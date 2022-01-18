@@ -1,12 +1,17 @@
 """Methods pertaining to weather data"""
+import base64
 import datetime
+import decimal
+from ast import literal_eval
 from enum import IntEnum
 import json
 import logging
+from io import BytesIO
 from pathlib import Path
 import random
 import urllib.parse
 
+import fastavro
 import requests
 from confluent_kafka import avro
 
@@ -22,7 +27,7 @@ class Weather(Producer):
         "status", "sunny partly_cloudy cloudy windy precipitation", start=0
     )
 
-    rest_proxy_url = "http://localhost:8082"
+    rest_proxy_url = "https://localhost:8082"
 
     key_schema = None
     value_schema = None
@@ -65,27 +70,38 @@ class Weather(Producer):
     def run(self, curr_time: datetime.datetime):
         self._set_weather(curr_time.month)
 
+        key = {
+            "timestamp": curr_time.timestamp()
+        }
+        value = {
+            "temperature": decimal.Decimal(str(self.temp)).quantize(decimal.Decimal('.1'),
+                                                                    rounding=decimal.ROUND_DOWN),
+            "status": self.status.name
+        }
+        value_bytes = BytesIO()
+        fastavro.schemaless_writer(value_bytes, fastavro.parse_schema(Weather.value_schema), value)
+
+        key_bytes = BytesIO()
+        fastavro.schemaless_writer(key_bytes, fastavro.parse_schema(Weather.key_schema), key)
+        print(f"Value={base64.b64encode(value_bytes.getvalue())}")
+
+        request = {
+            "key_schema": json.dumps(Weather.key_schema),
+            "value_schema": json.dumps(Weather.value_schema),
+            "records": [
+                {
+                    "key": base64.b64encode(key_bytes.getvalue()).decode('ascii'),
+                    "value":  base64.b64encode(value_bytes.getvalue()).decode('ascii')
+                }
+            ]
+        }
+        logger.info("Request {}", request)
         resp = requests.post(
             f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
-            headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
-            data=json.dumps(
-                {
-                    "key_schema": Weather.key_schema,
-                    "value_schema": Weather.value_schema,
-                    "records": [
-                        {
-                            "key": {
-                                "timestamp": curr_time.timestamp()
-                            },
-                            "value": {
-                                "temperature": self.temp,
-                                "status": self.status.name
-                            }
-                        }
-                    ]
-                }
-            ),
+            headers={"Content-Type": "application/vnd.kafka.binary.v2+json"},
+            data=json.dumps(request),
         )
+        logger.info("response from server %s", resp.content)
         resp.raise_for_status()
 
         logger.debug(
