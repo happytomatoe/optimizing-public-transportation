@@ -12,9 +12,6 @@ logger = logging.getLogger(__name__)
 class Producer:
     """Defines and provides common functionality amongst Producers"""
 
-    # Tracks existing topics across all Producer instances
-    existing_topics = set([])
-
     def __init__(
             self,
             topic_name,
@@ -32,16 +29,16 @@ class Producer:
 
         self.broker_properties = {
             "schema.registry.url": "http://localhost:8081",
-            "bootstrap.servers": "http://localhost:9092"
+            "bootstrap.servers": "PLAINTEXT://localhost:9092"
         }
 
-        # If the topic does not already exist, try to create it
-        if self.topic_name not in Producer.existing_topics:
-            self.create_topic()
-            Producer.existing_topics.add(self.topic_name)
-
-        self.producer = AvroProducer(config=self.broker_properties)
+        self.producer = AvroProducer(config=self.broker_properties, default_key_schema=self.key_schema,
+                                     default_value_schema=self.value_schema)
         self.client = AdminClient({"bootstrap.servers": self.broker_properties.get("bootstrap.servers")})
+
+        # If the topic does not already exist, try to create it
+        if not self.topic_exists(self.topic_name):
+            self.create_topic()
 
     def create_topic(self):
         """Creates the producer topic if it does not already exist"""
@@ -89,3 +86,9 @@ class Producer:
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""
         return int(round(time.time() * 1000))
+
+    def topic_exists(self, topic):
+        """Checks if the given topic exists in Kafka"""
+        topic_metadata = self.client.list_topics(timeout=5)
+        topics = topic_metadata.topics
+        return topic in topics

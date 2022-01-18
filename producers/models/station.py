@@ -36,7 +36,7 @@ class Station(Producer):
         # replicas
         #
         #
-        topic_name = f"{station_name}"  # TODO: Come up with a better topic name
+        topic_name = f"stations.{station_name}"  # TODO: Come up with a better topic name
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -61,12 +61,20 @@ class Station(Producer):
         #
         #
         logger.info("arrival kafka integration incomplete - skipping")
+        value = {
+            "station_id": self.station_id,
+            "train_id": train.train_id,
+            "direction": direction,
+            "line": "1",
+            "train_status": "1",
+            "prev_station_id": prev_station_id,
+            "prev_direction": prev_direction,
+        }
+        print(f"Sending value={value} to topic {self.topic_name}")
         self.producer.produce(
             topic=self.topic_name,
             key={"timestamp": self.time_millis()},
-            value={
-
-            },
+            value=value,
         )
 
     def __str__(self):

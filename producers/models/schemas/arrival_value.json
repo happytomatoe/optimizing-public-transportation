@@ -9,27 +9,27 @@
     },
     {
       "name": "train_id",
-      "type": "long"
+      "type": "string"
     },
     {
       "name": "direction",
-      "type": ""
+      "type": "string"
     },
     {
       "name": "line",
-      "type": ""
+      "type": "string"
     },
     {
       "name": "train_status",
-      "type": ""
+      "type": "string"
     },
     {
       "name": "prev_station_id",
-      "type": "long"
+      "type": ["null","long"]
     },
     {
       "name": "prev_direction",
-      "type": ""
+      "type": ["null","string"]
     }
   ]
 }
