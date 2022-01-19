@@ -5,12 +5,12 @@ import logging
 import requests
 
 import topic_check
-
+from config import load_config
 
 logger = logging.getLogger(__name__)
 
-
-KSQL_URL = "http://localhost:8088"
+config = load_config()
+KSQL_URL = config['ksql']['url']
 
 #
 # TODO: Complete the following KSQL statements.
@@ -25,7 +25,7 @@ KSQL_STATEMENT = """
 CREATE TABLE turnstile (
     ???
 ) WITH (
-    ???
+    FORMAT
 );
 
 CREATE TABLE turnstile_summary

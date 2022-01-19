@@ -5,6 +5,8 @@ import logging
 import requests
 import yaml
 
+from config import get_topic_prefix
+
 logger = logging.getLogger(__name__)
 
 config = yaml.safe_load(open("config.yml"))
@@ -15,7 +17,7 @@ CONNECTOR_NAME = "stations"
 
 def configure_connector():
     """Starts and configures the Kafka Connect connector"""
-    logging.debug("creating or updating kafka connect connector...")
+    logging.info("creating or updating kafka connect connector...")
     connectors_url = f"{KAFKA_CONNECT_URL}/connectors"
 
     resp = requests.get(f"{connectors_url}/{CONNECTOR_NAME}")
@@ -30,6 +32,7 @@ def configure_connector():
             {
                 "name": CONNECTOR_NAME,
                 "config": {
+                    "name": "stations",
                     "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
                     "connection.url": "jdbc:postgresql://postgres:5432/cta",
                     "connection.user": "cta_admin",
@@ -38,7 +41,9 @@ def configure_connector():
                     "dialect.name": "PostgreSqlDatabaseDialect",
                     "mode": "incrementing",
                     "incrementing.column.name": "stop_id",
-                    "topic.prefix": "connect-",
+                    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+                    "value.converter.schemas.enable": "false",
+                    "topic.prefix": f"{get_topic_prefix()}.connect-",
                     "batch.max.rows": "500",
                 }
             }),
@@ -46,7 +51,7 @@ def configure_connector():
 
     ## Ensure a healthy response was given
     resp.raise_for_status()
-    logging.debug("connector created successfully")
+    logging.info("connector created successfully")
 
 
 if __name__ == "__main__":

@@ -10,6 +10,8 @@ prepare-dev:
 
 create-venv:	
 	python3 -m pip install virtualenv
+	test -d $(VENV_NAME) || virtualenv -p python3 $(VENV_NAME)
+	${PYTHON_VENV} -m pip install -U pip
 
 compose:
 	docker-compose up -d --scale connect=1
@@ -20,21 +22,19 @@ create-connector:
 logs:
 	docker-compose logs -f
 
-producer:
-	python3 -m pip install virtualenv
-	test -d $(VENV_NAME) || virtualenv -p python3 $(VENV_NAME)
-	${PYTHON_VENV} -m pip install -U pip
+producer: create-venv
 	${PYTHON_VENV} -m pip  install  -r producers/requirements.txt
 	touch $(VENV_NAME)/bin/activate
 	${VENV_ACTIVATE}&&${PYTHON_LOCAL} producers/simulation.py
 
+
+faust: create-venv
+	${PYTHON_VENV} -m pip  install  -r consumers/requirements.txt
+	touch $(VENV_NAME)/bin/activate
+	${VENV_ACTIVATE}&&cd consumers&&faust -A faust_stream worker -l info
 
 clean:
 	rm -rf venv
 	find -iname "*.pyc" -delete
 	docker-compose down -v
 	rm -rf zoo
-
-topics-delete:
-	docker exec -it broker kafka-topics --bootstrap-server localhost:29092 --delete --topic 'stations-.*'
-	docker exec -it broker kafka-topics --bootstrap-server localhost:29092 --delete --topic 'turnstile-.*'
