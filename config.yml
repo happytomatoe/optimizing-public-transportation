@@ -1,0 +1,12 @@
+kafka:
+  connect:
+    enable: true
+    url: http://localhost:8083
+  rest-proxy:
+    url: http://localhost:8082
+  topics:
+    prefix: com.babkamen
+  bootstrap:
+    servers: PLAINTEXT://localhost:9092
+  schema-registry:
+      url: http://localhost:8081

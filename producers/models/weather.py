@@ -1,23 +1,20 @@
 """Methods pertaining to weather data"""
-import base64
 import datetime
-import decimal
-from ast import literal_eval
-from enum import IntEnum
 import json
 import logging
-from io import BytesIO
-from pathlib import Path
 import random
-import urllib.parse
+from enum import IntEnum
+from pathlib import Path
 
-import fastavro
 import requests
-from confluent_kafka import avro
-
 from models.producer import Producer
 
+from config import load_config
+
 logger = logging.getLogger(__name__)
+
+config = load_config()
+rest_proxy_config = config['kafka']['rest-proxy']
 
 
 class Weather(Producer):
@@ -27,7 +24,7 @@ class Weather(Producer):
         "status", "sunny partly_cloudy cloudy windy precipitation", start=0
     )
 
-    rest_proxy_url = "http://localhost:8082"
+    rest_proxy_url = rest_proxy_config['url']
 
     key_schema = None
     value_schema = None
@@ -74,8 +71,7 @@ class Weather(Producer):
             "timestamp": curr_time.timestamp()
         }
         value = {
-            "temperature": decimal.Decimal(str(self.temp)).quantize(decimal.Decimal('.1'),
-                                                                    rounding=decimal.ROUND_DOWN),
+            "temperature": str(int(self.temp)),
             "status": self.status.name
         }
 
@@ -85,12 +81,12 @@ class Weather(Producer):
             "records": [
                 {
                     "key": key,
-                    "value":  value
+                    "value": value
                 }
             ]
         }
         request_string = json.dumps(request, ensure_ascii=False, default=str)
-        logger.info(f"Request { request_string}")
+        logger.debug(f"Request {request_string}")
         resp = requests.post(
             f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
             headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},

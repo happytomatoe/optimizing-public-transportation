@@ -2,11 +2,13 @@
 import logging
 import time
 
-from confluent_kafka import avro
 from confluent_kafka.admin import AdminClient, NewTopic
 from confluent_kafka.avro import AvroProducer
 
+from config import load_config
+
 logger = logging.getLogger(__name__)
+config = load_config()
 
 
 class Producer:
@@ -28,8 +30,8 @@ class Producer:
         self.num_replicas = num_replicas
 
         self.broker_properties = {
-            "schema.registry.url": "http://localhost:8081",
-            "bootstrap.servers": "PLAINTEXT://localhost:9092"
+            "schema.registry.url": config['kafka']['schema-registry']['url'],
+            "bootstrap.servers": config['kafka']['bootstrap']['servers']
         }
 
         self.producer = AvroProducer(config=self.broker_properties, default_key_schema=self.key_schema,
@@ -62,9 +64,9 @@ class Producer:
         for topic, future in futures.items():
             try:
                 future.result()
-                print(f"topic '{self.topic_name}' created")
+                logger.info("topic %s created", self.topic_name)
             except Exception as e:
-                print(f"failed to create topic {self.topic_name}: {e}")
+                logger.error("failed to create topic %s: %s", self.topic_name, e)
                 raise
 
     @staticmethod

@@ -5,12 +5,7 @@
   "fields": [
     {
       "name": "temperature",
-      "type": {
-        "type": "bytes",
-        "logicalType": "decimal",
-        "precision": 4,
-        "scale": 1
-      }
+      "type": "string"
     },
     {
       "name": "status",

@@ -8,7 +8,12 @@ from confluent_kafka import avro
 from models.producer import Producer
 from models.turnstile_hardware import TurnstileHardware
 
+from config import load_config
+
 logger = logging.getLogger(__name__)
+
+config = load_config()
+TOPIC_PREFIX = config['kafka']['topics']['prefix']
 
 
 class Turnstile(Producer):
@@ -28,8 +33,9 @@ class Turnstile(Producer):
                 .replace("'", "")
         )
 
+        topic_name = f"{TOPIC_PREFIX}.turnstile.{station_name}"
         super().__init__(
-            f"turnstile.{station_name}",
+            topic_name,
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
         )
@@ -50,5 +56,5 @@ class Turnstile(Producer):
             "line": "yellow",
         }
         for _ in range(num_entries):
-            print(f"Sending {key}={value} to topic {self.topic_name}")
+            logger.debug(f"Sending {key}={value} to topic {self.topic_name}")
             self.producer.produce(topic=self.topic_name, key=key, value=value)

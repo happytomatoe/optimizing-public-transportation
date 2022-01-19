@@ -12,11 +12,13 @@ create-venv:
 	python3 -m pip install virtualenv
 
 compose:
-	docker-compose up -d
+	docker-compose up -d --scale connect=1
 
 create-connector:
 	curl -XPOST -H "Content-type: application/json" -H "Accept: application/json" --data "@./connect/postgres-source.json" 'http://localhost:8083/connectors'
 
+logs:
+	docker-compose logs -f
 
 producer:
 	python3 -m pip install virtualenv
@@ -30,3 +32,9 @@ producer:
 clean:
 	rm -rf venv
 	find -iname "*.pyc" -delete
+	docker-compose down -v
+	rm -rf zoo
+
+topics-delete:
+	docker exec -it broker kafka-topics --bootstrap-server localhost:29092 --delete --topic 'stations-.*'
+	docker exec -it broker kafka-topics --bootstrap-server localhost:29092 --delete --topic 'turnstile-.*'
