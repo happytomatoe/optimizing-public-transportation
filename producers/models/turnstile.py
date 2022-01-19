@@ -23,15 +23,7 @@ class Turnstile(Producer):
 
     def __init__(self, station):
         """Create the Turnstile"""
-        station_name = (
-            station.name.lower()
-                .replace("/", "_and_")
-                .replace(" ", "_")
-                .replace("-", "_")
-                .replace("'", "")
-        )
-
-        topic_name = f"{TOPIC_PREFIX}.turnstile.{station_name}"
+        topic_name = f"{TOPIC_PREFIX}.turnstile"
         super().__init__(
             topic_name,
             key_schema=Turnstile.key_schema,
@@ -50,9 +42,8 @@ class Turnstile(Producer):
         value = {
             "station_id": self.station.station_id,
             "station_name": self.station.name,
-            # FIXME
-            "line": "yellow",
         }
+        logger.debug(f"Station {self.station.station_id}. Turnstile entries {num_entries}")
         for _ in range(num_entries):
             logger.debug(f"Sending {key}={value} to topic {self.topic_name}")
             self.producer.produce(topic=self.topic_name, key=key, value=value)

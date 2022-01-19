@@ -36,7 +36,7 @@ class Weather(Producer):
 
     def __init__(self, month):
         super().__init__(
-            f"{TOPIC_PREFIX}.weather",
+            f"{TOPIC_PREFIX}.weather.v1",
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
         )
@@ -87,18 +87,18 @@ class Weather(Producer):
                 }
             ]
         }
-        request_string = json.dumps(request, ensure_ascii=False, default=str)
+        request_string = json.dumps(request)
         logger.debug(f"Request {request_string}")
         resp = requests.post(
             f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
             headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
             data=request_string,
         )
-        logger.info("response from server %s", resp.content)
         resp.raise_for_status()
 
-        logger.debug(
-            "sent weather data to kafka, temp: %s, status: %s",
+        logger.info(
+            "sent weather data to kafka topic %s, temp: %s, status: %s",
+            self.topic_name,
             self.temp,
             self.status.name,
         )

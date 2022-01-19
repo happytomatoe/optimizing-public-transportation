@@ -1,45 +1,48 @@
 """Configures KSQL to combine station and turnstile data"""
 import json
 import logging
+import logging.config
+from pathlib import Path
 
 import requests
 
 import topic_check
-from config import load_config
+from config import load_config, get_topic_prefix
+
+# Import logging before models to ensure configuration is picked up
+logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
 
 logger = logging.getLogger(__name__)
 
 config = load_config()
-KSQL_URL = config['ksql']['url']
+KSQL_URL = config['kafka']['ksql']['url']
+# TODO: number of turnstile entries is always increasing. It should probably decrease on some event
 
-#
-# TODO: Complete the following KSQL statements.
-# TODO: For the first statement, create a `turnstile` table from your turnstile topic.
-#       Make sure to use 'avro' datatype!
-# TODO: For the second statment, create a `turnstile_summary` table by selecting from the
-#       `turnstile` table and grouping on station_id.
-#       Make sure to cast the COUNT of station id to `count`
-#       Make sure to set the value format to JSON
-
-KSQL_STATEMENT = """
-CREATE TABLE turnstile (
-    ???
+KSQL_STATEMENT = f"""
+CREATE STREAM turnstile (
+    station_id BIGINT,
+    station_name VARCHAR
 ) WITH (
-    FORMAT
+    KAFKA_TOPIC = '{get_topic_prefix()}.turnstile', 
+    VALUE_FORMAT = 'AVRO'
 );
 
 CREATE TABLE turnstile_summary
-WITH (???) AS
-    ???
+WITH (VALUE_FORMAT = 'AVRO') AS
+    SELECT station_id, COUNT(*) as count FROM turnstile 
+    GROUP BY station_id;
 """
+
+TOPIC_NAME = "TURNSTILE_SUMMARY"
 
 
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
-    if topic_check.topic_exists("TURNSTILE_SUMMARY") is True:
+    if topic_check.topic_exists(TOPIC_NAME) is True:
+        logger.info(f"Topic {TOPIC_NAME} already exists. Will skip query execution")
         return
 
-    logging.debug("executing ksql statement...")
+    logging.info("executing ksql statement...")
 
     resp = requests.post(
         f"{KSQL_URL}/ksql",
@@ -54,6 +57,7 @@ def execute_statement():
 
     # Ensure that a 2XX status code was returned
     resp.raise_for_status()
+    logger.info("Successfully executed queries")
 
 
 if __name__ == "__main__":

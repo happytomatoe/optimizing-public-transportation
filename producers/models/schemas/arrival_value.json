@@ -16,14 +16,6 @@
       "type": "string"
     },
     {
-      "name": "line",
-      "type": "string"
-    },
-    {
-      "name": "train_status",
-      "type": "string"
-    },
-    {
       "name": "prev_station_id",
       "type": [
         "null",

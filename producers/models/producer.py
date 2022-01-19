@@ -50,13 +50,6 @@ class Producer:
                     self.topic_name,
                     num_partitions=self.num_partitions,
                     replication_factor=self.num_replicas,
-                    config={
-                        # TODO: should I add something?
-                        # "cleanup.policy": "delete",
-                        # "compression.type": "lz4",
-                        # "delete.retention.ms": "2000",
-                        # "file.delete.delay.ms": "2000"
-                    }
                 )
             ]
         )

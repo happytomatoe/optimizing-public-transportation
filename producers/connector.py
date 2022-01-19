@@ -22,7 +22,7 @@ def configure_connector():
 
     resp = requests.get(f"{connectors_url}/{CONNECTOR_NAME}")
     if resp.status_code == 200:
-        logging.debug("connector already created skipping recreation")
+        logging.info("connector already created skipping recreation")
         return
 
     resp = requests.post(

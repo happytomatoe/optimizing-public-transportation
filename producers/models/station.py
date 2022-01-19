@@ -22,15 +22,8 @@ class Station(Producer):
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
         self.name = name
-        station_name = (
-            self.name.lower()
-                .replace("/", "_and_")
-                .replace(" ", "_")
-                .replace("-", "_")
-                .replace("'", "")
-        )
 
-        topic_name = f"{TOPIC_PREFIX}.stations.{station_name}"
+        topic_name = f"{TOPIC_PREFIX}.stations"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -52,9 +45,6 @@ class Station(Producer):
             "station_id": self.station_id,
             "train_id": train.train_id,
             "direction": direction,
-            # TODO: add next entries
-            "line": "1",
-            "train_status": "1",
             "prev_station_id": prev_station_id,
             "prev_direction": prev_direction,
         }

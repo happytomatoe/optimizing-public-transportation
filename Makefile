@@ -16,22 +16,27 @@ create-venv:
 compose:
 	docker-compose up -d --scale connect=1
 
-create-connector:
-	curl -XPOST -H "Content-type: application/json" -H "Accept: application/json" --data "@./connect/postgres-source.json" 'http://localhost:8083/connectors'
-
 logs:
 	docker-compose logs -f
 
 producer: create-venv
 	${PYTHON_VENV} -m pip  install  -r producers/requirements.txt
 	touch $(VENV_NAME)/bin/activate
-	${VENV_ACTIVATE}&&${PYTHON_LOCAL} producers/simulation.py
+	${VENV_ACTIVATE}&&${PYTHON_VENV} producers/simulation.py
 
 
-faust: create-venv
+consumers-prepare: create-venv
 	${PYTHON_VENV} -m pip  install  -r consumers/requirements.txt
 	touch $(VENV_NAME)/bin/activate
+
+faust: consumers-prepare
 	${VENV_ACTIVATE}&&cd consumers&&faust -A faust_stream worker -l info
+
+ksql: consumers-prepare
+	${VENV_ACTIVATE}&&cd consumers&&${PYTHON_LOCAL} ksql.py
+
+consumer:
+	${VENV_ACTIVATE}&&cd consumers&&${PYTHON_LOCAL} server.py
 
 clean:
 	rm -rf venv

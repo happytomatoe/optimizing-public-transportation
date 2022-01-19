@@ -34,6 +34,8 @@ class Station(faust.Record):
             return "blue"
         elif self.green:
             return "green"
+        else:
+            logging.warning("Cannot find line for stations %s", self)
 
 
 # Faust will produce records to Kafka in this format
@@ -48,7 +50,7 @@ app = faust.App("stations-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="
 
 topic = app.topic(f"{get_topic_prefix()}.connect-stations", value_type=Station)
 
-out_topic = app.topic("connect-transformed-stations", partitions=1, value_type=TransformedStation)
+out_topic = app.topic("org.chicago.cta.stations.table.v1", partitions=1, value_type=TransformedStation)
 
 # Table to map station-> line
 table = app.Table(
