@@ -9,12 +9,14 @@ from pathlib import Path
 import requests
 from models.producer import Producer
 
-from config import load_config
+from config import load_config, get_topic_prefix
 
 logger = logging.getLogger(__name__)
 
 config = load_config()
 rest_proxy_config = config['kafka']['rest-proxy']
+
+TOPIC_PREFIX = get_topic_prefix()
 
 
 class Weather(Producer):
@@ -34,7 +36,7 @@ class Weather(Producer):
 
     def __init__(self, month):
         super().__init__(
-            "weather",  # TODO: Come up with a better topic name
+            f"{TOPIC_PREFIX}.weather",
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
         )

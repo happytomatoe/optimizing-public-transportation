@@ -4,16 +4,14 @@ import logging
 from pathlib import Path
 
 from confluent_kafka import avro
-
 from models.producer import Producer
 from models.turnstile_hardware import TurnstileHardware
 
-from config import load_config
+from config import get_topic_prefix
 
 logger = logging.getLogger(__name__)
 
-config = load_config()
-TOPIC_PREFIX = config['kafka']['topics']['prefix']
+TOPIC_PREFIX = get_topic_prefix()
 
 
 class Turnstile(Producer):
@@ -52,7 +50,7 @@ class Turnstile(Producer):
         value = {
             "station_id": self.station.station_id,
             "station_name": self.station.name,
-            # TODO: FIXME
+            # FIXME
             "line": "yellow",
         }
         for _ in range(num_entries):

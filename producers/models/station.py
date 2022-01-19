@@ -4,14 +4,13 @@ from pathlib import Path
 
 from confluent_kafka import avro
 
-from config import load_config
+from config import load_config, get_topic_prefix
 from models import Turnstile
 from models.producer import Producer
 
 logger = logging.getLogger(__name__)
 
-config = load_config()
-TOPIC_PREFIX = config['kafka']['topics']['prefix']
+TOPIC_PREFIX = get_topic_prefix()
 
 
 class Station(Producer):
@@ -31,7 +30,7 @@ class Station(Producer):
                 .replace("'", "")
         )
 
-        topic_name = f"{TOPIC_PREFIX}.stations.{station_name}"  # TODO: Come up with a better topic name
+        topic_name = f"{TOPIC_PREFIX}.stations.{station_name}"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -48,11 +47,6 @@ class Station(Producer):
 
     def run(self, train, direction, prev_station_id, prev_direction):
         """Simulates train arrivals at this station"""
-        #
-        #
-        # TODO: Complete this function by producing an arrival message to Kafka
-        #
-        #
         key = {"timestamp": self.time_millis()}
         value = {
             "station_id": self.station_id,
