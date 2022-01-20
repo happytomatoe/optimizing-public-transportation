@@ -47,8 +47,8 @@ services:
     image: confluentinc/cp-schema-registry:7.0.1
     hostname: schema-registry
     container_name: schema-registry
-    mem_limit: 1G
-    mem_reservation: 512M
+#    mem_limit: 1G
+#    mem_reservation: 512M
     depends_on:
       - broker
     ports:
