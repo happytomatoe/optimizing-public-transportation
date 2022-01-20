@@ -1,4 +1,5 @@
 """Producer base-class providing common utilites and functionality"""
+import json
 import logging
 import time
 

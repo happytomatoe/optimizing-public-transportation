@@ -1,11 +1,13 @@
 """Contains functionality related to Weather"""
-import logging
 
 import logging.config
+import os
 from pathlib import Path
 
-# Import logging before models to ensure configuration is picked up
-logging.config.fileConfig(f"{Path(__file__).parents[1]}/logging.ini")
+# path = f"{Path(__file__).parents[1]}/logging.ini"
+# assert os.path.exists(path), f"File not exists {path}"
+
+# logging.config.fileConfig(path)
 logger = logging.getLogger(__name__)
 
 
@@ -19,10 +21,10 @@ class Weather:
 
     def process_message(self, message):
         """Handles incoming weather data"""
-        logger.info("weather process_message is incomplete - skipping")
-        logger.info(f"Weather {message}")
-        #
-        #
-        # TODO: Process incoming weather messages. Set the temperature and status.
-        #
-        #
+        value = message.value()
+        logger.info("Incoming weather message %s", value)
+        self.temperature = float(value['temperature'])
+        self.status = value['status']
+
+    def __str__(self) -> str:
+        return f"Weather data. Temp={self.temperature}, status={self.status}"

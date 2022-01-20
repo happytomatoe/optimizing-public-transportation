@@ -22,8 +22,15 @@ class Station(Producer):
 
     def __init__(self, station_id, name, color, direction_a=None, direction_b=None):
         self.name = name
-
-        topic_name = f"{TOPIC_PREFIX}.stations"
+        station_name = (
+            self.name.lower()
+                .replace("/", "_and_")
+                .replace(" ", "_")
+                .replace("-", "_")
+                .replace("'", "")
+        )
+        # TODO: change!
+        topic_name = f"{TOPIC_PREFIX}.station.arrivals"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -31,7 +38,7 @@ class Station(Producer):
         )
 
         self.station_id = int(station_id)
-        self.color = color
+        self.line = color.name
         self.dir_a = direction_a
         self.dir_b = direction_b
         self.a_train = None
@@ -45,6 +52,8 @@ class Station(Producer):
             "station_id": self.station_id,
             "train_id": train.train_id,
             "direction": direction,
+            "line": self.line,
+            "train_status": "running",
             "prev_station_id": prev_station_id,
             "prev_direction": prev_direction,
         }

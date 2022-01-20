@@ -35,7 +35,7 @@ class Station(faust.Record):
         elif self.green:
             return "green"
         else:
-            logging.warning("Cannot find line for stations %s", self)
+            logging.warning("Cannot find line for station %s", self)
 
 
 # Faust will produce records to Kafka in this format
@@ -46,7 +46,7 @@ class TransformedStation(faust.Record):
     line: str
 
 
-app = faust.App("stations-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
+app = faust.App("stations-faust-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
 
 topic = app.topic(f"{get_topic_prefix()}.connect-stations", value_type=Station)
 
@@ -70,8 +70,9 @@ async def station(stations):
         except KeyError:
             t = TransformedStation(station_id=st.station_id, station_name=st.station_name, order=st.order,
                                    line=st.line)
-            logger.info("Record %s", t)
-            table[station_id] = t
+            if st.line is not None:
+                logger.info("Record %s", t)
+                table[station_id] = t
 
 
 if __name__ == "__main__":

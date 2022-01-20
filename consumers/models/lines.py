@@ -1,9 +1,14 @@
 """Contains functionality related to Lines"""
 import json
-import logging
+import logging.config
+import os
+from pathlib import Path
 
 from models import Line
 
+path = f"{Path(__file__).parents[1]}/logging.ini"
+assert os.path.exists(path), f"File not exists {path}"
+logging.config.fileConfig(path)
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +24,7 @@ class Lines:
 
     def process_message(self, message):
         """Processes a station message"""
+        print(f"processing message {message.value()} from topic {message.topic()}")
         if "org.chicago.cta.station" in message.topic():
             value = message.value()
             if message.topic() == "org.chicago.cta.stations.table.v1":

@@ -1,18 +1,18 @@
 """Defines core consumer functionality"""
-import logging
-
-import confluent_kafka
-from confluent_kafka import Consumer, OFFSET_BEGINNING
-from confluent_kafka.avro import AvroConsumer
-from confluent_kafka.avro.serializer import SerializerError
-from tornado import gen
 
 import logging.config
+import os
 from pathlib import Path
+
+from confluent_kafka import Consumer, OFFSET_BEGINNING
+from confluent_kafka.avro import AvroConsumer
+from tornado import gen
+
 from config import load_config
 
-# Import logging before models to ensure configuration is picked up
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
+# path = f"{Path(__file__).parents[0]}/logging.ini"
+# assert os.path.exists(path), f"File not exists {path}"
+# logging.config.fileConfig(path)
 
 logger = logging.getLogger(__name__)
 config = load_config()
@@ -47,7 +47,7 @@ class KafkaConsumer:
             self.consumer = AvroConsumer(self.broker_properties)
         else:
             self.consumer = Consumer(self.broker_properties)
-
+        logger.info("Subscribing to %s", topic_name_pattern)
         self.consumer.subscribe([topic_name_pattern], on_assign=self.on_assign)
 
     def on_assign(self, consumer, partitions):
@@ -62,8 +62,9 @@ class KafkaConsumer:
         consumer.assign(partitions)
 
     async def consume(self):
-        print(f"Consuming from {self.topic_name_pattern}. Offset {self.consumer}")
         """Asynchronously consumes data from kafka topic"""
+        print(f"Consuming from {self.topic_name_pattern}. Offset {self.consumer}")
+
         while True:
             num_results = 1
             while num_results > 0:
@@ -79,6 +80,7 @@ class KafkaConsumer:
         # is retrieved.
         #
         #
+        print(f"Polling from {self.topic_name_pattern}")
         message = self.consumer.poll(self.consume_timeout)
         if message is None:
             logger.info("No messages in %s", self.topic_name_pattern)
@@ -87,8 +89,9 @@ class KafkaConsumer:
             logger.error(f'Consumer error: {message.error().str()}')
             return 0
         else:
-            logger.info("Found message in %s", self.topic_name_pattern)
+            print("Found message in %s" % self.topic_name_pattern)
             self.message_handler(message)
+            # print("Returning 1")
             return 1
 
     def close(self):

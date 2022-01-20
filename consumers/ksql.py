@@ -2,6 +2,7 @@
 import json
 import logging
 import logging.config
+import os
 from pathlib import Path
 
 import requests
@@ -9,8 +10,9 @@ import requests
 import topic_check
 from config import load_config, get_topic_prefix
 
-# Import logging before models to ensure configuration is picked up
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
+path = f"{Path(__file__).parents[0]}/logging.ini"
+assert os.path.exists(path), f"File not exists {path}"
+logging.config.fileConfig(path)
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +29,7 @@ CREATE STREAM turnstile (
     VALUE_FORMAT = 'AVRO'
 );
 
-CREATE TABLE turnstile_summary
-WITH (VALUE_FORMAT = 'AVRO') AS
+CREATE TABLE turnstile_summary AS
     SELECT station_id, COUNT(*) as count FROM turnstile 
     GROUP BY station_id;
 """
@@ -38,6 +39,7 @@ TOPIC_NAME = "TURNSTILE_SUMMARY"
 
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
+    # TODO: change as it'\s not idempotent
     if topic_check.topic_exists(TOPIC_NAME) is True:
         logger.info(f"Topic {TOPIC_NAME} already exists. Will skip query execution")
         return

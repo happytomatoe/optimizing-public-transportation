@@ -1,16 +1,16 @@
 kafka:
   connect:
     enable: true
-    url: http://34.118.9.7:8083
+    url: http://localhost:8083
   rest-proxy:
-    url: http://34.118.9.7:8082
+    url: http://localhost:8082
   topics:
     prefix: org.chicago.cta
   bootstrap:
-    servers: PLAINTEXT://34.118.9.7:9092
+    servers: PLAINTEXT://localhost:9092
   broker:
-    url: 34.118.9.7:9092
+    url: localhost:9092
   schema-registry:
-      url: http://34.118.9.7:8081
+      url: http://localhost:8081
   ksql:
-    url: http://34.118.9.7:8088
+    url: http://localhost:8088
