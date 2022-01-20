@@ -14,7 +14,7 @@ create-venv:
 	${PYTHON_VENV} -m pip install -U pip
 
 compose:
-	docker-compose up -d --scale connect=1
+	docker-compose up -d
 
 logs:
 	docker-compose logs -f
