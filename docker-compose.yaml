@@ -116,7 +116,6 @@ services:
 
   connect:
     image: confluentinc/cp-kafka-connect:5.2.1
-    hostname: connect
     container_name: connect
     network_mode: "host"
     mem_limit: 2.5G
