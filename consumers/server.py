@@ -83,12 +83,12 @@ def run_server():
             lines.process_message,
             offset_earliest=True,
         ),
-        # KafkaConsumer(
-        #     "TURNSTILE_SUMMARY",
-        #     lines.process_message,
-        #     offset_earliest=True,
-        #     is_avro=False,
-        # ),
+        KafkaConsumer(
+            "TURNSTILE_SUMMARY",
+            lines.process_message,
+            offset_earliest=True,
+            is_avro=False,
+        ),
     ]
 
     try:

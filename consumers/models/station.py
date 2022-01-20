@@ -47,6 +47,7 @@ class Station:
 
     def process_message(self, json_data):
         """Handles arrival and turnstile messages"""
+        print("Setting count")
         self.num_turnstile_entries = json_data["COUNT"]
 
     def __str__(self) -> str:

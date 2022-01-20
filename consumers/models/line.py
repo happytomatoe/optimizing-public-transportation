@@ -14,6 +14,7 @@ logging.config.fileConfig(path)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 class Line:
     """Defines the Line Model"""
 
@@ -85,11 +86,14 @@ class Line:
         elif "org.chicago.cta.station" in message.topic():
             self._handle_arrival(message)
         elif "TURNSTILE_SUMMARY" == message.topic():
-            json_data = json.loads(message.value())
-            station_id = json_data.get("STATION_ID")
-            station = self.stations.get(station_id)
+            print(f"Turnstile Message value {message.value()}")
+            json_data = json.loads(message.value().decode('utf-8'))
+            station_id = message.key().decode('utf-8')
+            print(f"Json data {json_data}. Station_id={station_id}. Stations {len(self.stations)}")
+
+            station: Station = self.stations.get(station_id)
             if station is None:
-                logger.debug("unable to handle message due to missing station")
+                print(f"unable to handle message due to missing station. Stations size {len(self.stations)}")
                 return
             station.process_message(json_data)
         else:

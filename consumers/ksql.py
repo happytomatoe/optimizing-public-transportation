@@ -25,13 +25,13 @@ CREATE STREAM turnstile (
     station_id BIGINT,
     station_name VARCHAR
 ) WITH (
-    KAFKA_TOPIC = '{get_topic_prefix()}.turnstile', 
-    VALUE_FORMAT = 'AVRO'
+    KAFKA_TOPIC = '{get_topic_prefix()}.turnstile',
+    VALUE_FORMAT='AVRO'
 );
 
-CREATE TABLE turnstile_summary AS
-    SELECT station_id, COUNT(*) as count FROM turnstile 
-    GROUP BY station_id;
+CREATE TABLE TURNSTILE_SUMMARY  WITH (VALUE_FORMAT='JSON',
+        KEY_FORMAT = 'JSON') AS SELECT
+ STATION_ID as station_id ,COUNT(*) as count from turnstile GROUP BY station_id;
 """
 
 TOPIC_NAME = "TURNSTILE_SUMMARY"
