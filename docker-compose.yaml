@@ -126,8 +126,8 @@ services:
       - broker
       - schema-registry
       - postgres
-    ports:
-      - "8083:8083"
+#    ports:
+#      - "8083:8083"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: "localhost:29092"
       CONNECT_REST_PORT: 8083
