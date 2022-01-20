@@ -88,95 +88,95 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-#  ksqldb-server:
-#    image: confluentinc/cp-ksqldb-server:7.0.1
-#    hostname: ksqldb-server
-#    container_name: ksqldb-server
-#    mem_limit: 512M
-#    mem_reservation: 256M
-#    depends_on:
-#      - broker
-#      - connect
-#    ports:
-#      - "8088:8088"
-#    environment:
-#      KSQL_CONFIG_DIR: "/etc/ksql"
-#      KSQL_BOOTSTRAP_SERVERS: "broker:29092"
-#      KSQL_HOST_NAME: ksqldb-server
-#      KSQL_LISTENERS: "http://0.0.0.0:8088"
-#      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
-#      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-#      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
-#      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
-#      KSQL_KSQL_CONNECT_URL: "http://connect:8083"
-#      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
-#      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
-#      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
-#
-#  connect:
-#    image: confluentinc/cp-kafka-connect:5.2.1
-#    hostname: connect
-#    container_name: connect
-#    mem_limit: 2.5G
-#    mem_reservation: 1G
-#    depends_on:
-#      - zookeeper
-#      - broker
-#      - schema-registry
-#      - postgres
-#    ports:
-#      - "8083:8083"
-#    environment:
-#      CONNECT_BOOTSTRAP_SERVERS: "broker:29092"
-#      CONNECT_REST_PORT: 8083
-#      CONNECT_GROUP_ID: compose-connect-group
-#      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
-#      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
-#      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
-#      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
-#      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
-#      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-#      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
-#      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-#      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-#      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-#      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
-#      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
-#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-#      CONNECT_PLUGIN_PATH: '/usr/share/java'
-#
-#  rest-proxy:
-#    image: confluentinc/cp-kafka-rest:7.0.1
-#    hostname: rest-proxy
-#    container_name: rest-proxy
-#    mem_limit: 512M
-#    mem_reservation: 256M
-#    ports:
-#    - "8082:8082"
-#    environment:
-#      KAFKA_REST_BOOTSTRAP_SERVERS: "PLAINTEXT://broker:29092"
-#      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082/"
-#      KAFKA_REST_HOST_NAME: "rest-proxy"
-#      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:8081/"
-#    depends_on:
-#    - broker
-#    - schema-registry
-#
-#
-#  postgres:
-#    image: postgres:11
-#    hostname: postgres
-#    container_name: postgres
-#    mem_limit: 512M
-#    mem_reservation: 256M
-#    ports:
-#    - "5432:5432"
-#    environment:
-#      POSTGRES_USER: "cta_admin"
-#      POSTGRES_PASSWORD: "chicago"
-#      POSTGRES_DB: "cta"
-#    volumes:
-#    - ./producers/data/cta_stations.csv:/tmp/cta_stations.csv
-#    - ./load_stations.sql:/docker-entrypoint-initdb.d/load_stations.sql
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:7.0.1
+    hostname: ksqldb-server
+    container_name: ksqldb-server
+    mem_limit: 512M
+    mem_reservation: 256M
+    depends_on:
+      - broker
+      - connect
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_BOOTSTRAP_SERVERS: "broker:29092"
+      KSQL_HOST_NAME: ksqldb-server
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      KSQL_KSQL_CONNECT_URL: "http://connect:8083"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
+
+  connect:
+    image: confluentinc/cp-kafka-connect:5.2.1
+    hostname: connect
+    container_name: connect
+    mem_limit: 2.5G
+    mem_reservation: 1G
+    depends_on:
+      - zookeeper
+      - broker
+      - schema-registry
+      - postgres
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "broker:29092"
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_PLUGIN_PATH: '/usr/share/java'
+
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:7.0.1
+    hostname: rest-proxy
+    container_name: rest-proxy
+    mem_limit: 512M
+    mem_reservation: 256M
+    ports:
+    - "8082:8082"
+    environment:
+      KAFKA_REST_BOOTSTRAP_SERVERS: "PLAINTEXT://broker:29092"
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082/"
+      KAFKA_REST_HOST_NAME: "rest-proxy"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:8081/"
+    depends_on:
+    - broker
+    - schema-registry
+
+
+  postgres:
+    image: postgres:11
+    hostname: postgres
+    container_name: postgres
+    mem_limit: 512M
+    mem_reservation: 256M
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_USER: "cta_admin"
+      POSTGRES_PASSWORD: "chicago"
+      POSTGRES_DB: "cta"
+    volumes:
+    - ./producers/data/cta_stations.csv:/tmp/cta_stations.csv
+    - ./load_stations.sql:/docker-entrypoint-initdb.d/load_stations.sql
