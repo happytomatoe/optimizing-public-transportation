@@ -15,7 +15,7 @@ services:
 
   broker:
     image: confluentinc/cp-server:7.0.1
-    hostname: broker
+#    hostname: broker
     container_name: broker
     mem_limit: 2G
     mem_reservation: 1G
