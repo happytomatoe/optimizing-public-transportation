@@ -6,8 +6,8 @@ services:
     container_name: zookeeper
     mem_limit: 512M
     mem_reservation: 256M
-    ports:
-      - "2181:2181"
+#    ports:
+#      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
