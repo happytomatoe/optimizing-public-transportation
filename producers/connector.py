@@ -35,10 +35,9 @@ def configure_connector():
                                   "dialect.name": "PostgreSqlDatabaseDialect",
                                   "mode": "incrementing",
                                   "incrementing.column.name": "stop_id",
-                                  "key.converter": "org.apache.kafka.connect.json.JsonConverter",
-                                  "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-                                  "value.converter.schemas.enable": "true",
-                                  "key.converter.schemas.enable": "true",
+                                  "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+                                  "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+                                  "value.converter.schemas.enable": "false",
                                   "topic.prefix": f"{get_topic_prefix()}.connect-",
                                   "batch.max.rows": "500", }})
     resp = requests.post(
