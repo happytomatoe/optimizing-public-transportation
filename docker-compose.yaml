@@ -40,6 +40,23 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
+  init-kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic org.chicago.cta.connect-stations --replication-factor 1 --partitions 30
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+
   schema-registry:
     image: confluentinc/cp-schema-registry:7.0.1
     hostname: schema-registry
