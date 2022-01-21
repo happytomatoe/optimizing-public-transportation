@@ -141,6 +141,18 @@ services:
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+   command:
+        - bash
+        - -c
+        - |
+          echo "Installing Connector"
+          confluent-hub install  --no-prompt confluentinc/kafka-connect-jdbc:10.3.x
+          confluent-hub install confluentinc/kafka-connect-json-schema-converter:7.0.1
+          #
+          echo "Launching Kafka Connect worker"
+          /etc/confluent/docker/run &
+          #
+          sleep infinity
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:7.0.1
