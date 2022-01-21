@@ -52,7 +52,7 @@ class Station(Producer):
             "train_id": train.train_id,
             "direction": direction,
             "line": self.line,
-            "train_status": "on time",
+            "train_status":  train.status,
             "prev_station_id": prev_station_id,
             "prev_direction": prev_direction,
         }

@@ -19,8 +19,8 @@ class Producer:
             topic_name,
             key_schema,
             value_schema=None,
-            num_partitions=1,
-            num_replicas=1,
+            num_partitions=config['kafka']['broker']['topics']['creation']['num-partitions'],
+            num_replicas=config['kafka']['broker']['topics']['creation']['num-replicas'],
     ):
         """Initializes a Producer object with basic settings"""
         self.topic_name = topic_name

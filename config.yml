@@ -10,6 +10,10 @@ kafka:
     servers: PLAINTEXT://localhost:9092
   broker:
     url: localhost:9092
+    topics:
+      creation:
+        num-partitions: 5
+        num-replicas: 1
   schema-registry:
       url: http://localhost:8081
   ksql:
