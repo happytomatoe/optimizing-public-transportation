@@ -17,7 +17,7 @@ compose:
 	docker-compose up -d
 
 logs:
-	docker-compose logs -f -n 20
+	docker-compose logs -f --tail="20"
 
 producer: create-venv
 	${PYTHON_VENV} -m pip  install  -r producers/requirements.txt
