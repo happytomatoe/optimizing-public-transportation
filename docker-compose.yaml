@@ -80,7 +80,19 @@ services:
     depends_on:
     - "kafka0"
     - "schema-registry"
-
+    command:
+    - bash
+    - -c
+    - |
+      echo "Installing Connector"
+      confluent-hub install  --no-prompt confluentinc/kafka-connect-jdbc:10.3.x
+      confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.0.1
+      confluent-hub install --no-prompt confluentinc/connect-transforms:1.4.2
+      #
+      echo "Launching Kafka Connect worker"
+      /etc/confluent/docker/run &
+      #
+      sleep infinity
   ksql:
     image: confluentinc/cp-ksql-server:5.2.2
     ports:
