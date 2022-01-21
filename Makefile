@@ -47,4 +47,3 @@ clean:
 	rm -rf venv
 	find -iname "*.pyc" -delete
 	docker-compose down -v
-	rm -rf zoo

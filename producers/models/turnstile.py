@@ -42,6 +42,7 @@ class Turnstile(Producer):
         value = {
             "station_id": self.station.station_id,
             "station_name": self.station.name,
+            "line": self.station.line,
         }
         logger.debug(f"Station {self.station.station_id}. Turnstile entries {num_entries}")
         for _ in range(num_entries):

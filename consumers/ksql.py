@@ -13,12 +13,12 @@ logger = LoggerFactory.get_logger(__name__)
 
 config = load_config()
 KSQL_URL = config['kafka']['ksql']['url']
-# TODO: number of turnstile entries is always increasing. It should probably decrease on some event
 
 KSQL_STATEMENT = f"""
 CREATE STREAM turnstile (
     station_id BIGINT,
-    station_name VARCHAR
+    station_name VARCHAR,
+    line VARCHAR
 ) WITH (
     KAFKA_TOPIC = '{get_topic_prefix()}.turnstile',
     VALUE_FORMAT='AVRO'
@@ -26,7 +26,7 @@ CREATE STREAM turnstile (
 
 CREATE TABLE TURNSTILE_SUMMARY  WITH (VALUE_FORMAT='JSON',
         KEY_FORMAT = 'JSON') AS SELECT
- STATION_ID as station_id ,COUNT(*) as count from turnstile GROUP BY station_id;
+ station_id, line, COUNT(*) as count from turnstile GROUP BY station_id, line;
 """
 
 TOPIC_NAME = "TURNSTILE_SUMMARY"
@@ -52,7 +52,11 @@ def execute_statement():
     )
 
     # Ensure that a 2XX status code was returned
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except Exception as e:
+        logger.error("Response %s", resp.json())
+        raise e
     logger.info("Successfully executed queries")
 
 

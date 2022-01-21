@@ -4,7 +4,7 @@ from confluent_kafka import Consumer, OFFSET_BEGINNING
 from confluent_kafka.avro import AvroConsumer
 from tornado import gen
 
-from config import load_config
+from config import load_config, get_topic_prefix
 from logging_factory import LoggerFactory
 
 logger = LoggerFactory.get_logger(__name__)
@@ -31,7 +31,7 @@ class KafkaConsumer:
         self.offset_earliest = offset_earliest
 
         self.broker_properties = {
-            "group.id": "org.chicago.cta.consumers",
+            "group.id": f"{get_topic_prefix()}.consumers",
             "bootstrap.servers": config['kafka']['bootstrap']['servers']
         }
 

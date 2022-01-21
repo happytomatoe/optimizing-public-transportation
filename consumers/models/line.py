@@ -4,6 +4,10 @@ import json
 from logging_factory import LoggerFactory
 from models import Station
 
+from config import get_topic_prefix
+
+TOPIC_PREFIX = get_topic_prefix()
+
 logger = LoggerFactory.get_logger(__name__)
 
 
@@ -58,19 +62,21 @@ class Line:
     def process_message(self, message):
         """Given a kafka message, extract data"""
 
-        logger.info(f"Received message for line {message.topic()}. Value {message.value()}")
+        logger.debug(f"Received message for line {message.topic()}. Value {message.value()}")
 
-        if message.topic() == "org.chicago.cta.stations.table.v1":
+        if message.topic() == f"{TOPIC_PREFIX}.stations.table.v1":
             try:
                 value = json.loads(message.value())
                 self._handle_station(value)
             except Exception as e:
                 logger.fatal("bad station? %s, %s", value, e)
-        elif "org.chicago.cta.station" in message.topic():
+        elif f"{TOPIC_PREFIX}.station" in message.topic():
             self._handle_arrival(message)
         elif "TURNSTILE_SUMMARY" == message.topic():
             json_data = json.loads(message.value().decode('utf-8'))
-            station_id = int(message.key().decode('utf-8'))
+            key = json.loads(message.key())
+            logger.debug("Turnstile key %s", key)
+            station_id = int(key['STATION_ID'])
             station: Station = self.stations.get(station_id)
             if station is None:
                 logger.info(

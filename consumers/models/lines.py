@@ -4,7 +4,10 @@ import json
 from logging_factory import LoggerFactory
 from models import Line
 
+from config import get_topic_prefix
+
 logger = LoggerFactory.get_logger(__name__)
+TOPIC_PREFIX = get_topic_prefix()
 
 
 class Lines:
@@ -19,22 +22,24 @@ class Lines:
     def process_message(self, message):
         """Processes a station message"""
         logger.debug(f"processing message {message.value()} from topic {message.topic()}")
-        if "org.chicago.cta.station" in message.topic():
+        if f"{TOPIC_PREFIX}.station" in message.topic():
             value = message.value()
-            if message.topic() == "org.chicago.cta.stations.table.v1":
+            if message.topic() == f"{TOPIC_PREFIX}.stations.table.v1":
                 value = json.loads(value)
-            if value["line"] == "green":
-                self.green_line.process_message(message)
-            elif value["line"] == "red":
-                self.red_line.process_message(message)
-            elif value["line"] == "blue":
-                self.blue_line.process_message(message)
-            else:
-                logger.debug("discarding unknown line msg %s", value["line"])
+            self.process_line_message(message, value["line"])
         elif "TURNSTILE_SUMMARY" == message.topic():
             logger.debug("Processing turnstile %s - %s", message.key(), message.value())
-            self.green_line.process_message(message)
-            self.red_line.process_message(message)
-            self.blue_line.process_message(message)
+            key = json.loads(message.key())
+            self.process_line_message(message, key['LINE'])
         else:
             logger.info("ignoring non-lines message %s", message.topic())
+
+    def process_line_message(self, message, line):
+        if line == "green":
+            self.green_line.process_message(message)
+        elif line == "red":
+            self.red_line.process_message(message)
+        elif line == "blue":
+            self.blue_line.process_message(message)
+        else:
+            logger.debug("discarding unknown line msg %s", line)
