@@ -57,7 +57,7 @@ services:
     - "schema-registry"
 
   connect:
-    image: confluentinc/cp-kafka-connect:5.2.2
+    image: confluentinc/cp-kafka-connect:7.0.1
     ports:
     - "8083:8083"
     environment:
