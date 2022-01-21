@@ -18,6 +18,10 @@ CONNECTOR_NAME = "stations"
 
 def configure_connector():
     """Starts and configures the Kafka Connect connector"""
+    if not connect_config['enable']:
+        logger.info("kafka connect functionality is disabled")
+        return
+
     logging.info("creating or updating kafka connect connector...")
     connectors_url = f"{KAFKA_CONNECT_URL}/connectors"
 
@@ -36,15 +40,23 @@ def configure_connector():
                                   "mode": "incrementing",
                                   "incrementing.column.name": "stop_id",
                                   "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+                                  'key.converter.schema.registry.url': 'http://schema-registry:8081',
                                   "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
-                                  "value.converter.schemas.enable": "false",
+                                  'value.converter.schema.registry.url': 'http://schema-registry:8081',
                                   "topic.prefix": f"{get_topic_prefix()}.connect-",
-                                  "batch.max.rows": "500", }})
+                                  "batch.max.rows": "500",
+                                  'transforms': 'createKey,extractInt',
+                                  'transforms.createKey.type': 'org.apache.kafka.connect.transforms.ValueToKey',
+                                  'transforms.createKey.fields': 'id',
+                                  'transforms.extractInt.type': 'org.apache.kafka.connect.transforms.ExtractField$Key',
+                                  'transforms.extractInt.field': 'stop_id'
+                                  }})
     resp = requests.post(
         connectors_url,
         headers={"Content-Type": "application/json"},
         data=data,
     )
+
     ## Ensure a healthy response was given
     try:
         resp.raise_for_status()
@@ -56,7 +68,5 @@ def configure_connector():
 
 
 if __name__ == "__main__":
-    if connect_config['enabled']:
-        configure_connector()
-    else:
-        logger.info("kafka connect functionality is disabled")
+    configure_connector()
+
