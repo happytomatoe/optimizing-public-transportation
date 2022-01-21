@@ -27,6 +27,7 @@ producer: producers-prepare
 	${VENV_ACTIVATE}&&${PYTHON_VENV} producers/simulation.py
 
 connector:
+	curl -X DELETE http://localhost:8083/connectors/stations
 	${VENV_ACTIVATE}&&${PYTHON_VENV} producers/connector.py
 
 consumers-prepare: create-venv

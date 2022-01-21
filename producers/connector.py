@@ -30,7 +30,7 @@ def configure_connector():
         logging.info("connector already created skipping recreation")
         return
     data = json.dumps({"name": CONNECTOR_NAME,
-                       "config": {"name": "stations",
+                       "config": {"name": CONNECTOR_NAME,
                                   "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
                                   "connection.url": "jdbc:postgresql://postgres:5432/cta",
                                   "connection.user": "cta_admin",
@@ -45,11 +45,11 @@ def configure_connector():
                                   'value.converter.schema.registry.url': 'http://schema-registry:8081',
                                   "topic.prefix": f"{get_topic_prefix()}.connect-",
                                   "batch.max.rows": "500",
-                                  'transforms': 'createKey,extractInt',
+                                  'transforms': 'createKey, extractToInt',
                                   'transforms.createKey.type': 'org.apache.kafka.connect.transforms.ValueToKey',
-                                  'transforms.createKey.fields': 'id',
-                                  'transforms.extractInt.type': 'org.apache.kafka.connect.transforms.ExtractField$Key',
-                                  'transforms.extractInt.field': 'stop_id'
+                                  'transforms.createKey.fields': 'stop_id',
+                                  'transforms.extractToInt.type': 'org.apache.kafka.connect.transforms.ExtractField$Key',
+                                  'transforms.extractToInt.field': 'stop_id',
                                   }})
     resp = requests.post(
         connectors_url,
