@@ -38,10 +38,10 @@ faust: consumers-prepare
 	${VENV_ACTIVATE}&&cd consumers&&faust -A faust_stream worker -l info
 
 ksql: consumers-prepare
-	${VENV_ACTIVATE}&&cd consumers&&${PYTHON_LOCAL} ksql.py
+	${VENV_ACTIVATE}&&cd consumers&&../${PYTHON_VENV} ksql.py
 
-consumer:
-	${VENV_ACTIVATE}&&cd consumers&&${PYTHON_LOCAL} server.py
+consumer: consumers-prepare
+	${VENV_ACTIVATE}&&cd consumers&&../${PYTHON_VENV} server.py
 
 clean:
 	rm -rf venv
