@@ -41,7 +41,7 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
   init-kafka:
-    image: confluentinc/cp-kafka:7.0.1
+    image: confluentinc/confluentinc/cp-server:7.0.1
     depends_on:
       - broker
     entrypoint: [ '/bin/sh', '-c' ]
