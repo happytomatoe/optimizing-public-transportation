@@ -1,17 +1,17 @@
 """Methods pertaining to weather data"""
 import datetime
 import json
-import logging
 import random
 from enum import IntEnum
 from pathlib import Path
 
 import requests
-from models.producer import Producer
 
 from config import load_config, get_topic_prefix
+from logging_factory import LoggerFactory
+from models.producer import Producer
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 config = load_config()
 rest_proxy_config = config['kafka']['rest-proxy']
@@ -88,7 +88,7 @@ class Weather(Producer):
             ]
         }
         request_string = json.dumps(request)
-        logger.debug(f"Request {request_string}")
+        logger.debug(f"Weather request {request_string}")
         resp = requests.post(
             f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
             headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},

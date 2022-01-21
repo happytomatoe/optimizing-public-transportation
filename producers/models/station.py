@@ -1,14 +1,14 @@
 """Methods pertaining to loading and configuring CTA "L" station data."""
-import logging
 from pathlib import Path
 
 from confluent_kafka import avro
-
-from config import load_config, get_topic_prefix
-from models import Turnstile
 from models.producer import Producer
 
-logger = logging.getLogger(__name__)
+from config import get_topic_prefix
+from logging_factory import LoggerFactory
+from models import Turnstile
+
+logger = LoggerFactory.get_logger(__name__)
 
 TOPIC_PREFIX = get_topic_prefix()
 
@@ -29,8 +29,7 @@ class Station(Producer):
                 .replace("-", "_")
                 .replace("'", "")
         )
-        # TODO: change!
-        topic_name = f"{TOPIC_PREFIX}.station.arrivals"
+        topic_name = f"{TOPIC_PREFIX}.station.arrivals.{station_name}"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -53,7 +52,7 @@ class Station(Producer):
             "train_id": train.train_id,
             "direction": direction,
             "line": self.line,
-            "train_status": "running",
+            "train_status": "on time",
             "prev_station_id": prev_station_id,
             "prev_direction": prev_direction,
         }

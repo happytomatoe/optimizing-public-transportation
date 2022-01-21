@@ -1,14 +1,12 @@
-import logging
 import math
-from pathlib import Path
 import random
+from pathlib import Path
 
 import pandas as pd
 
-from models.producer import Producer
+from logging_factory import LoggerFactory
 
-
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class TurnstileHardware:

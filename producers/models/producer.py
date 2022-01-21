@@ -1,14 +1,13 @@
 """Producer base-class providing common utilites and functionality"""
-import json
-import logging
 import time
 
 from confluent_kafka.admin import AdminClient, NewTopic
 from confluent_kafka.avro import AvroProducer
 
 from config import load_config
+from logging_factory import LoggerFactory
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 config = load_config()
 
 

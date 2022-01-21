@@ -4,8 +4,9 @@ import logging
 import faust
 
 from config import load_config, get_topic_prefix
+from logging_factory import LoggerFactory
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 config = load_config()
 KAFKA_BROKER_URL = config['kafka']['broker']['url']
@@ -46,11 +47,11 @@ class TransformedStation(faust.Record):
     line: str
 
 
-app = faust.App("stations-faust-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
+app = faust.App("stations-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
 
 topic = app.topic(f"{get_topic_prefix()}.connect-stations", value_type=Station)
 
-out_topic = app.topic("org.chicago.cta.stations.table.v1", partitions=1, value_type=TransformedStation)
+out_topic = app.topic(f"{get_topic_prefix()}.stations.table.v1", partitions=1, value_type=TransformedStation)
 
 # Table to map station-> line
 table = app.Table(

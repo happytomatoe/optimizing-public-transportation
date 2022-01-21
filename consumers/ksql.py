@@ -2,19 +2,14 @@
 import json
 import logging
 import logging.config
-import os
-from pathlib import Path
 
 import requests
 
 import topic_check
 from config import load_config, get_topic_prefix
+from logging_factory import LoggerFactory
 
-path = f"{Path(__file__).parents[0]}/logging.ini"
-assert os.path.exists(path), f"File not exists {path}"
-logging.config.fileConfig(path)
-
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 config = load_config()
 KSQL_URL = config['kafka']['ksql']['url']
@@ -39,7 +34,6 @@ TOPIC_NAME = "TURNSTILE_SUMMARY"
 
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
-    # TODO: change as it'\s not idempotent
     if topic_check.topic_exists(TOPIC_NAME) is True:
         logger.info(f"Topic {TOPIC_NAME} already exists. Will skip query execution")
         return

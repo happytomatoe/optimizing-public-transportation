@@ -1,20 +1,13 @@
 """Defines core consumer functionality"""
 
-import logging.config
-import os
-from pathlib import Path
-
 from confluent_kafka import Consumer, OFFSET_BEGINNING
 from confluent_kafka.avro import AvroConsumer
 from tornado import gen
 
 from config import load_config
+from logging_factory import LoggerFactory
 
-# path = f"{Path(__file__).parents[0]}/logging.ini"
-# assert os.path.exists(path), f"File not exists {path}"
-# logging.config.fileConfig(path)
-
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 config = load_config()
 
 
@@ -38,7 +31,7 @@ class KafkaConsumer:
         self.offset_earliest = offset_earliest
 
         self.broker_properties = {
-            "group.id": "test",
+            "group.id": "org.chicago.cta.consumers",
             "bootstrap.servers": config['kafka']['bootstrap']['servers']
         }
 
@@ -52,7 +45,6 @@ class KafkaConsumer:
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
-        logger.debug(f"On assign {partitions}")
         if self.offset_earliest:
             for partition in partitions:
                 # TODO: test
@@ -63,7 +55,7 @@ class KafkaConsumer:
 
     async def consume(self):
         """Asynchronously consumes data from kafka topic"""
-        logger.debug(f"Consuming from {self.topic_name_pattern}. Offset {self.consumer}")
+        logger.debug(f"Consuming from {self.topic_name_pattern}")
 
         while True:
             num_results = 1
@@ -73,23 +65,16 @@ class KafkaConsumer:
 
     def _consume(self):
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
-        #
-        #
-        # TODO: Poll Kafka for messages. Make sure to handle any errors or exceptions.
-        # Additionally, make sure you return 1 when a message is processed, and 0 when no message
-        # is retrieved.
-        #
-        #
-        logger.info(f"Polling from {self.topic_name_pattern}")
+        logger.debug("Polling from %s", self.topic_name_pattern)
         message = self.consumer.poll(self.consume_timeout)
         if message is None:
-            logger.info("No messages in %s", self.topic_name_pattern)
+            logger.debug("No messages in %s", self.topic_name_pattern)
             return 0
         elif message.error():
             logger.error(f'Consumer error: {message.error().str()}')
             return 0
         else:
-            print("Found message in %s" % self.topic_name_pattern)
+            logger.debug("Found message in %s", self.topic_name_pattern)
             self.message_handler(message)
             return 1
 

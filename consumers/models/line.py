@@ -1,12 +1,10 @@
 """Contains functionality related to Lines"""
 import json
-import logging.config
 
+from logging_factory import LoggerFactory
 from models import Station
 
-logger = logging.getLogger(__name__)
-
-logger.info("File %s", __name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class Line:
@@ -28,10 +26,8 @@ class Line:
         """Adds the station to this Line's data model"""
         if value["line"] != self.color:
             return
-        print(f"Station {value}")
         message = Station.from_message(value)
         self.stations[value["station_id"]] = message
-        print(f"Station {message}")
 
     def _handle_arrival(self, message):
         """Updates train locations"""
@@ -45,31 +41,24 @@ class Line:
             if prev_station is not None:
                 prev_station.handle_departure(prev_dir)
             else:
-                print(f"unable to handle previous station due to missing station {len(self.stations)}")
+                logger.info(f"unable to handle previous station due to missing station {len(self.stations)}")
         else:
-            print(
+            logger.info(
                 f"unable to handle previous station due to missing previous info {len(self.stations)}"
             )
-        print(1)
         station_id = value.get("station_id")
-        print(2)
         station: Station = self.stations.get(station_id)
-        print(3)
         if station is None:
-            print("unable to handle message due to missing station")
+            logger.info("unable to handle message due to missing station")
             return
-        print(f"Station handle arrival {station}. Value={value}")
         station.handle_arrival(
             value.get("direction"), value.get("train_id"), value.get("train_status")
         )
-        print("Successfully handled station message")
 
     def process_message(self, message):
         """Given a kafka message, extract data"""
 
-        # TODO: Based on the message topic, call the appropriate handler.
-        print(f"Received message for line {message.topic()}. Value {message.value()}")
-        # print(f"Logger level {logger.isEnabledFor(logging.INFO)}")
+        logger.info(f"Received message for line {message.topic()}. Value {message.value()}")
 
         if message.topic() == "org.chicago.cta.stations.table.v1":
             try:
@@ -81,12 +70,11 @@ class Line:
             self._handle_arrival(message)
         elif "TURNSTILE_SUMMARY" == message.topic():
             json_data = json.loads(message.value().decode('utf-8'))
-            station_id = message.key().decode('utf-8')
-
+            station_id = int(message.key().decode('utf-8'))
             station: Station = self.stations.get(station_id)
             if station is None:
-                print(
-                    f"unable to handle message due to missing station. Station_id={station_id} Line {self.color}. Station count {len(self.stations)}")
+                logger.info(
+                    f"unable to handle message due to missing station")
                 return
             station.process_message(json_data)
         else:

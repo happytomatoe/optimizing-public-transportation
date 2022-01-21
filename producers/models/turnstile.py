@@ -1,15 +1,15 @@
 """Creates a turnstile data producer"""
 import datetime
-import logging
 from pathlib import Path
 
 from confluent_kafka import avro
+
+from config import get_topic_prefix
+from logging_factory import LoggerFactory
 from models.producer import Producer
 from models.turnstile_hardware import TurnstileHardware
 
-from config import get_topic_prefix
-
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 TOPIC_PREFIX = get_topic_prefix()
 

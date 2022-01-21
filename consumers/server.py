@@ -1,23 +1,22 @@
 """Defines a Tornado Server that consumes Kafka Event data for display"""
 import logging
 import logging.config
-import os
 from pathlib import Path
 
 import tornado.ioloop
 import tornado.template
 import tornado.web
+
 import ksql
-from consumer import KafkaConsumer
-from models import Lines, Weather
 import topic_check
+from config import get_topic_prefix
 
+TOPIC_PREFIX = get_topic_prefix()
+from consumer import KafkaConsumer
+from logging_factory import LoggerFactory
+from models import Lines, Weather
 
-path = f"{Path(__file__).parents[0]}/logging.ini"
-assert os.path.exists(path), f"File not exists {path}"
-logging.config.fileConfig(path)
-
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -50,7 +49,7 @@ def run_server():
             "Ensure that the KSQL Command has run successfully before running the web server!"
         )
         exit(1)
-    if topic_check.topic_exists("org.chicago.cta.stations.table.v1") is False:
+    if topic_check.topic_exists(f"{TOPIC_PREFIX}.stations.table.v1") is False:
         logger.fatal(
             "Ensure that Faust Streaming is running successfully before running the web server!"
         )
@@ -67,19 +66,18 @@ def run_server():
     # Build kafka consumers
     consumers = [
         KafkaConsumer(
-            "org.chicago.cta.weather.v1",
+            f"{TOPIC_PREFIX}.weather.v1",
             weather_model.process_message,
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "org.chicago.cta.stations.table.v1",
+            f"{TOPIC_PREFIX}.stations.table.v1",
             lines.process_message,
             offset_earliest=True,
             is_avro=False,
         ),
         KafkaConsumer(
-            # TODO: Revert
-            "org.chicago.cta.station.arrivals",
+            f"^{TOPIC_PREFIX}.station.arrivals.",
             lines.process_message,
             offset_earliest=True,
         ),

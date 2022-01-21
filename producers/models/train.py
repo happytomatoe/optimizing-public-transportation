@@ -1,9 +1,9 @@
 """Defines CTA Train Model"""
 from enum import IntEnum
-import logging
 
+from logging_factory import LoggerFactory
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class Train:

@@ -1,7 +1,8 @@
 """Contains functionality related to Stations"""
-import logging.config
 
-logger = logging.getLogger(__name__)
+from logging_factory import LoggerFactory
+
+logger = LoggerFactory.get_logger(__name__)
 
 
 class Station:
@@ -23,7 +24,7 @@ class Station:
 
     def handle_departure(self, direction):
         """Removes a train from the station"""
-        print("Handle departure")
+        logger.debug("Handle departure")
         if direction == "a":
             self.dir_a = None
         else:
@@ -31,9 +32,8 @@ class Station:
 
     def handle_arrival(self, direction, train_id, train_status):
         """Unpacks arrival data"""
-        print(f"arrival 1. Params {direction}\t{train_id}\t{train_status}")
         status_dict = {"train_id": train_id, "status": train_status.replace("_", " ")}
-        print(f"Arrival to {direction}. Status dict {status_dict}")
+        logger.info(f"Train arrived. {status_dict}")
         if direction == "a":
             self.dir_a = status_dict
         else:
@@ -41,7 +41,6 @@ class Station:
 
     def process_message(self, json_data):
         """Handles arrival and turnstile messages"""
-        print("Setting count")
         self.num_turnstile_entries = json_data["COUNT"]
 
     def __str__(self) -> str:

@@ -110,7 +110,7 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
 
   connect:
-    image: confluentinc/cp-kafka-connect:5.2.1
+    image: confluentinc/cp-kafka-connect:7.0.1
     hostname: connect
     container_name: connect
 #    mem_limit: 2.5G

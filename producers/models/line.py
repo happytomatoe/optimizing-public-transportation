@@ -1,12 +1,10 @@
 """Defines functionality relating to train lines"""
-import collections
 from enum import IntEnum
-import logging
 
+from logging_factory import LoggerFactory
 from models import Station, Train
 
-
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class Line:

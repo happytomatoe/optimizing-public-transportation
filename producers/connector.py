@@ -6,8 +6,9 @@ import requests
 import yaml
 
 from config import get_topic_prefix
+from logging_factory import LoggerFactory
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 config = yaml.safe_load(open("config.yml"))
 connect_config = config['kafka']['connect']
@@ -24,33 +25,34 @@ def configure_connector():
     if resp.status_code == 200:
         logging.info("connector already created skipping recreation")
         return
-
+    data = json.dumps({"name": CONNECTOR_NAME,
+                       "config": {"name": "stations",
+                                  "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+                                  "connection.url": "jdbc:postgresql://postgres:5432/cta",
+                                  "connection.user": "cta_admin",
+                                  "connection.password": "chicago",
+                                  "table.whitelist": "stations",
+                                  "dialect.name": "PostgreSqlDatabaseDialect",
+                                  "mode": "incrementing",
+                                  "incrementing.column.name": "stop_id",
+                                  "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+                                  "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+                                  "value.converter.schemas.enable": "true",
+                                  "key.converter.schemas.enable": "true",
+                                  "topic.prefix": f"{get_topic_prefix()}.connect-",
+                                  "batch.max.rows": "500", }})
     resp = requests.post(
         connectors_url,
         headers={"Content-Type": "application/json"},
-        data=json.dumps(
-            {
-                "name": CONNECTOR_NAME,
-                "config": {
-                    "name": "stations",
-                    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
-                    "connection.url": "jdbc:postgresql://postgres:5432/cta",
-                    "connection.user": "cta_admin",
-                    "connection.password": "chicago",
-                    "table.whitelist": "stations",
-                    "dialect.name": "PostgreSqlDatabaseDialect",
-                    "mode": "incrementing",
-                    "incrementing.column.name": "stop_id",
-                    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-                    "value.converter.schemas.enable": "false",
-                    "topic.prefix": f"{get_topic_prefix()}.connect-",
-                    "batch.max.rows": "500",
-                }
-            }),
+        data=data,
     )
-
     ## Ensure a healthy response was given
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except Exception as e:
+        logger.error("Request body %s", data)
+        logger.error("Response %s", resp.json())
+        raise e
     logging.info("connector created successfully")
 
 

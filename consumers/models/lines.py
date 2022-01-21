@@ -1,10 +1,10 @@
 """Contains functionality related to Lines"""
 import json
-import logging.config
 
+from logging_factory import LoggerFactory
 from models import Line
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class Lines:
@@ -18,7 +18,7 @@ class Lines:
 
     def process_message(self, message):
         """Processes a station message"""
-        print(f"processing message {message.value()} from topic {message.topic()}")
+        logger.debug(f"processing message {message.value()} from topic {message.topic()}")
         if "org.chicago.cta.station" in message.topic():
             value = message.value()
             if message.topic() == "org.chicago.cta.stations.table.v1":
@@ -32,7 +32,7 @@ class Lines:
             else:
                 logger.debug("discarding unknown line msg %s", value["line"])
         elif "TURNSTILE_SUMMARY" == message.topic():
-            print("Processing turnstile ")
+            logger.debug("Processing turnstile %s - %s", message.key(), message.value())
             self.green_line.process_message(message)
             self.red_line.process_message(message)
             self.blue_line.process_message(message)

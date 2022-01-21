@@ -1,8 +1,8 @@
 """Contains functionality related to Weather"""
 
-import logging.config
+from logging_factory import LoggerFactory
 
-logger = logging.getLogger(__name__)
+logger = LoggerFactory.get_logger(__name__)
 
 
 class Weather:
@@ -16,7 +16,7 @@ class Weather:
     def process_message(self, message):
         """Handles incoming weather data"""
         value = message.value()
-        logger.info("Incoming weather message %s", value)
+        logger.debug("Incoming weather message %s", value)
         self.temperature = float(value['temperature'])
         self.status = value['status']
 
