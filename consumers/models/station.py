@@ -1,11 +1,5 @@
 """Contains functionality related to Stations"""
 import logging.config
-import os
-from pathlib import Path
-
-path = f"{Path(__file__).parents[1]}/logging.ini"
-assert os.path.exists(path), f"File not exists {path}"
-logging.config.fileConfig(path)
 
 logger = logging.getLogger(__name__)
 

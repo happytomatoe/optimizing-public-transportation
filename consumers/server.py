@@ -7,15 +7,15 @@ from pathlib import Path
 import tornado.ioloop
 import tornado.template
 import tornado.web
-
-path = f"{Path(__file__).parents[0]}/logging.ini"
-assert os.path.exists(path), f"File not exists {path}"
-logging.config.fileConfig(path)
-
 import ksql
 from consumer import KafkaConsumer
 from models import Lines, Weather
 import topic_check
+
+
+path = f"{Path(__file__).parents[0]}/logging.ini"
+assert os.path.exists(path), f"File not exists {path}"
+logging.config.fileConfig(path)
 
 logger = logging.getLogger(__name__)
 

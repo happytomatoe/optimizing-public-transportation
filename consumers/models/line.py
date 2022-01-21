@@ -1,18 +1,12 @@
 """Contains functionality related to Lines"""
 import json
 import logging.config
-import os
-from pathlib import Path
 
 from models import Station
 
-# Import logging before models to ensure configuration is picked up
-path = f"{Path(__file__).parents[1]}/logging.ini"
-assert os.path.exists(path), f"File not exists {path}"
-logging.config.fileConfig(path)
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
+logger.info("File %s", __name__)
 
 
 class Line:
@@ -45,7 +39,7 @@ class Line:
         value = message.value()
         prev_station_id = value.get("prev_station_id")
         prev_dir = value.get("prev_direction")
-        print(f"arrival from {prev_station_id} {prev_dir}")
+        logger.info(f"arrival from {prev_station_id} {prev_dir}")
         if prev_dir is not None and prev_station_id is not None:
             prev_station: Station = self.stations.get(prev_station_id)
             if prev_station is not None:
@@ -86,14 +80,13 @@ class Line:
         elif "org.chicago.cta.station" in message.topic():
             self._handle_arrival(message)
         elif "TURNSTILE_SUMMARY" == message.topic():
-            print(f"Turnstile Message value {message.value()}")
             json_data = json.loads(message.value().decode('utf-8'))
             station_id = message.key().decode('utf-8')
-            print(f"Json data {json_data}. Station_id={station_id}. Stations {len(self.stations)}")
 
             station: Station = self.stations.get(station_id)
             if station is None:
-                print(f"unable to handle message due to missing station. Stations size {len(self.stations)}")
+                print(
+                    f"unable to handle message due to missing station. Station_id={station_id} Line {self.color}. Station count {len(self.stations)}")
                 return
             station.process_message(json_data)
         else:

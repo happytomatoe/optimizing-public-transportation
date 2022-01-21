@@ -1,14 +1,8 @@
 """Contains functionality related to Lines"""
 import json
 import logging.config
-import os
-from pathlib import Path
 
 from models import Line
-
-path = f"{Path(__file__).parents[1]}/logging.ini"
-assert os.path.exists(path), f"File not exists {path}"
-logging.config.fileConfig(path)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +32,7 @@ class Lines:
             else:
                 logger.debug("discarding unknown line msg %s", value["line"])
         elif "TURNSTILE_SUMMARY" == message.topic():
-            print("Processing turnstile")
+            print("Processing turnstile ")
             self.green_line.process_message(message)
             self.red_line.process_message(message)
             self.blue_line.process_message(message)

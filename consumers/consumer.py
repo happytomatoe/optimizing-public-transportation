@@ -52,7 +52,7 @@ class KafkaConsumer:
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
-        print(f"On assign {partitions}")
+        logger.debug(f"On assign {partitions}")
         if self.offset_earliest:
             for partition in partitions:
                 # TODO: test
@@ -63,7 +63,7 @@ class KafkaConsumer:
 
     async def consume(self):
         """Asynchronously consumes data from kafka topic"""
-        print(f"Consuming from {self.topic_name_pattern}. Offset {self.consumer}")
+        logger.debug(f"Consuming from {self.topic_name_pattern}. Offset {self.consumer}")
 
         while True:
             num_results = 1
@@ -80,7 +80,7 @@ class KafkaConsumer:
         # is retrieved.
         #
         #
-        print(f"Polling from {self.topic_name_pattern}")
+        logger.info(f"Polling from {self.topic_name_pattern}")
         message = self.consumer.poll(self.consume_timeout)
         if message is None:
             logger.info("No messages in %s", self.topic_name_pattern)
@@ -91,7 +91,6 @@ class KafkaConsumer:
         else:
             print("Found message in %s" % self.topic_name_pattern)
             self.message_handler(message)
-            # print("Returning 1")
             return 1
 
     def close(self):
