@@ -19,11 +19,15 @@ compose:
 logs:
 	docker-compose logs -f --tail="20"
 
-producer: create-venv
+producers-prepare: create-venv
 	${PYTHON_VENV} -m pip  install  -r producers/requirements.txt
 	touch $(VENV_NAME)/bin/activate
+
+producer: producers-prepare
 	${VENV_ACTIVATE}&&${PYTHON_VENV} producers/simulation.py
 
+connector:
+	${VENV_ACTIVATE}&&${PYTHON_VENV} producers/connector.py
 
 consumers-prepare: create-venv
 	${PYTHON_VENV} -m pip  install  -r consumers/requirements.txt
