@@ -29,7 +29,7 @@ class Station(Producer):
                 .replace("-", "_")
                 .replace("'", "")
         )
-        topic_name = f"{TOPIC_PREFIX}.station.arrivals.{station_name}"
+        topic_name = f"{TOPIC_PREFIX}.station.arrivals.{station_name}.v1"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -52,7 +52,7 @@ class Station(Producer):
             "train_id": train.train_id,
             "direction": direction,
             "line": self.line,
-            "train_status":  train.status,
+            "train_status":  train.status.name,
             "prev_station_id": prev_station_id,
             "prev_direction": prev_direction,
         }

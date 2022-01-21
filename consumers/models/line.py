@@ -39,7 +39,7 @@ class Line:
         value = message.value()
         prev_station_id = value.get("prev_station_id")
         prev_dir = value.get("prev_direction")
-        logger.info(f"arrival from {prev_station_id} {prev_dir}")
+        logger.info(f"arrival from  station {prev_station_id} and direction {prev_dir}")
         if prev_dir is not None and prev_station_id is not None:
             prev_station: Station = self.stations.get(prev_station_id)
             if prev_station is not None:

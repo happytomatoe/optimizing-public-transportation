@@ -23,7 +23,7 @@ class Turnstile(Producer):
 
     def __init__(self, station):
         """Create the Turnstile"""
-        topic_name = f"{TOPIC_PREFIX}.turnstile"
+        topic_name = f"{TOPIC_PREFIX}.turnstile.v1"
         super().__init__(
             topic_name,
             key_schema=Turnstile.key_schema,

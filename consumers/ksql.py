@@ -20,7 +20,7 @@ CREATE STREAM turnstile (
     station_name VARCHAR,
     line VARCHAR
 ) WITH (
-    KAFKA_TOPIC = '{get_topic_prefix()}.turnstile',
+    KAFKA_TOPIC = '{get_topic_prefix()}.turnstile.v1',
     VALUE_FORMAT='AVRO'
 );
 
