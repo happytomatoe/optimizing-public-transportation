@@ -19,8 +19,6 @@ class Weather:
         logger.debug("Incoming weather message %s", value)
         self.temperature = value['temperature']
         self.status = value['status']
-        logger.info("Weather %s", self)
-        logger.info("Weather temp type", type(self.temperature))
 
     def __str__(self) -> str:
         return f"Weather data. Temp={self.temperature}, status={self.status}"
