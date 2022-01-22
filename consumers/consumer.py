@@ -35,6 +35,9 @@ class KafkaConsumer:
             "bootstrap.servers": config['kafka']['bootstrap']['servers']
         }
 
+        if self.offset_earliest:
+            self.broker_properties["auto.offset.reset"] = "earliest"
+
         if is_avro is True:
             self.broker_properties["schema.registry.url"] = config['kafka']['schema-registry']['url']
             self.consumer = AvroConsumer(self.broker_properties)
