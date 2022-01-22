@@ -4,20 +4,14 @@ producers
 import datetime
 import time
 from enum import IntEnum
-import logging
-import logging.config
 from pathlib import Path
 
 import pandas as pd
 
+from connector import configure_connector
 # Import logging before models to ensure configuration is picked up
 from logging_factory import LoggerFactory
-
-logging.config.fileConfig(f"{Path(__file__).parents[0]}/logging.ini")
-
-from connector import configure_connector
 from models import Line, Weather
-
 
 logger = LoggerFactory.get_logger(__name__)
 

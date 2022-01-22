@@ -87,7 +87,6 @@ Once docker-compose is ready, the following services will be available:
 
 | Service                    | Host URL                                         | Docker URL                                           | Username | Password |
 |----------------------------|--------------------------------------------------|------------------------------------------------------| --- | --- |
-| Kafka Control center(UI)   | [http://localhost:9021](http://localhost:9021)   | http://topics-ui:8085                                |
 | Kafka                      | PLAINTEXT://localhost:9092                       | PLAINTEXT://broker:29092                             |
 | REST Proxy                 | [http://localhost:8082](http://localhost:8082/)  | http://rest-proxy:8082/                              |
 | Schema Registry            | [http://localhost:8081](http://localhost:8081/ ) | http://schema-registry:8081/                         |

@@ -14,14 +14,17 @@ logger = LoggerFactory.get_logger(__name__)
 config = load_config()
 KSQL_URL = config['kafka']['ksql']['url']
 
+# Creating a table with
+# id STRUCT<timestamp TIMESTAMP> PRIMARY KEY,
+#  will skew results as more than 1 passenger can get into station at the same moment
 KSQL_STATEMENT = f"""
 CREATE STREAM turnstile (
-    station_id BIGINT,
-    station_name VARCHAR,
+    station_id BIGINT ,
+    station_name  VARCHAR,
     line VARCHAR
 ) WITH (
     KAFKA_TOPIC = '{get_topic_prefix()}.turnstile.v1',
-    VALUE_FORMAT='AVRO'
+    FORMAT='AVRO'
 );
 
 CREATE TABLE TURNSTILE_SUMMARY  WITH (VALUE_FORMAT='JSON',

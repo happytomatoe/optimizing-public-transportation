@@ -12,7 +12,7 @@ kafka:
     url: localhost:9092
     topics:
       creation:
-        num-partitions: 10
+        num-partitions: 30
         num-replicas: 1
   schema-registry:
       url: http://localhost:8081
