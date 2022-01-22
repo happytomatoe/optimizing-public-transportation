@@ -64,7 +64,7 @@ class TransformedStation(faust.Record):
     line: str
 
 
-app = faust.App("stations-stream-2", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
+app = faust.App("stations-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
 
 topic = app.topic(CONNECT_TOPIC_NAME, value_type=Station)
 
