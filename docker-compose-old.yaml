@@ -108,7 +108,7 @@ services:
         - -c
         - |
           echo "Installing Connector"
-          confluent-hub install --no-prompt  confluentinc/kafka-connect-json-schema-converter:5.5.4
+          confluent-hub install --no-prompt  confluentinc/kafka-connect-json-schema-converter:6.0.3
           #
           echo "Launching Kafka Connect worker"
           /etc/confluent/docker/run &
