@@ -64,7 +64,7 @@ services:
       CONNECT_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka0:19092"
       CONNECT_GROUP_ID: "connect"
       CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-      CONNECT_PLUGIN_PATH: "/usr/share/java"
+      CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components/'
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
@@ -86,7 +86,7 @@ services:
         - |
           echo "Installing Connector"
           confluent-hub install  --no-prompt confluentinc/kafka-connect-jdbc:10.3.x
-          confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.0.1
+          confluent-hub install  confluentinc/kafka-connect-json-schema-converter:7.0.1
           confluent-hub install --no-prompt confluentinc/connect-transforms:1.4.2
           #
           echo "Launching Kafka Connect worker"
