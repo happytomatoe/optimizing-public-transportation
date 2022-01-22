@@ -2,14 +2,9 @@
 import logging
 
 import faust
-import schema_registry.client.schema
-from schema_registry.client import SchemaRegistryClient
-from schema_registry.serializers.faust import FaustJsonSerializer
 
 from config import load_config, get_topic_prefix
-
 from logging_factory import LoggerFactory
-from faust.serializers import codecs
 
 logger = LoggerFactory.get_logger(__name__)
 
@@ -19,16 +14,8 @@ KAFKA_BROKER_URL = config['kafka']['broker']['url']
 
 CONNECT_TOPIC_NAME = f"{TOPIC_PREFIX}.connect-stations"
 
-# As Faust doesn't have a feature to read message with json schema
-client = SchemaRegistryClient(url=config['kafka']['schema-registry']['url'])
-jsonSchema = schema_registry.client.schema.JsonSchema({})
-json_station_serializer = FaustJsonSerializer(client, f"{CONNECT_TOPIC_NAME}-value", jsonSchema)
-
-codecs.register("json_station_serializer", json_station_serializer)
-
-
 # Faust will ingest records from Kafka in this format
-class Station(faust.Record, serializer='json_station_serializer'):
+class Station(faust.Record, serializer='json'):
     stop_id: int
     direction_id: str
     stop_name: str
@@ -62,7 +49,7 @@ class TransformedStation(faust.Record):
     line: str
 
 
-app = faust.App("stations-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
+app = faust.App("stations-stream-4", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
 
 topic = app.topic(CONNECT_TOPIC_NAME, value_type=Station)
 
