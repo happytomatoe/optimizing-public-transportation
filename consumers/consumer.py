@@ -30,12 +30,9 @@ class KafkaConsumer:
         self.consume_timeout = consume_timeout
         self.offset_earliest = offset_earliest
 
-        self.broker_properties = {
-            "group.id": f"{get_topic_prefix()}.consumers",
-            "bootstrap.servers": config['kafka']['bootstrap']['servers']
-        }
-
-        self.offset_earliest["auto.offset.reset"] = "earliest" if offset_earliest else "latest"
+        self.broker_properties = {"group.id": f"{get_topic_prefix()}.consumers",
+                                  "bootstrap.servers": config['kafka']['bootstrap']['servers'],
+                                  "auto.offset.reset": "earliest" if offset_earliest else "latest"}
 
         if is_avro is True:
             self.broker_properties["schema.registry.url"] = config['kafka']['schema-registry']['url']
