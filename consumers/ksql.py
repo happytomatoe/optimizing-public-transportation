@@ -19,16 +19,16 @@ KSQL_URL = config['kafka']['ksql']['url']
 #  will skew results as more than 1 passenger can get into station at the same moment
 KSQL_STATEMENT = f"""
 CREATE STREAM turnstile (
-    station_id BIGINT,
+    station_id BIGINT ,
     station_name  VARCHAR,
     line VARCHAR
 ) WITH (
-    KAFKA_TOPIC = 'org.chicago.cta.turnstile.v1',
-    VALUE_FORMAT='AVRO',
-    KEY='station_id'
+    KAFKA_TOPIC = '{get_topic_prefix()}.turnstile.v1',
+    FORMAT='AVRO'
 );
 
-CREATE TABLE TURNSTILE_SUMMARY  WITH (VALUE_FORMAT='JSON') AS SELECT
+CREATE TABLE TURNSTILE_SUMMARY  WITH (VALUE_FORMAT='JSON',
+        KEY_FORMAT = 'JSON') AS SELECT
  station_id, line, COUNT(*) as count from turnstile GROUP BY station_id, line;
 """
 
