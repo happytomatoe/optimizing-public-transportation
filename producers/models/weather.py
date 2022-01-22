@@ -35,6 +35,14 @@ class Weather(Producer):
     summer_months = set((6, 7, 8))
 
     def __init__(self, month):
+        if Weather.key_schema is None:
+            with open(f"{Path(__file__).parents[0]}/schemas/weather_key.json") as f:
+                Weather.key_schema = json.load(f)
+
+        if Weather.value_schema is None:
+            with open(f"{Path(__file__).parents[0]}/schemas/weather_value.json") as f:
+                Weather.value_schema = json.load(f)
+
         super().__init__(
             f"{TOPIC_PREFIX}.weather.v1",
             key_schema=Weather.key_schema,
@@ -48,13 +56,7 @@ class Weather(Producer):
         elif month in Weather.summer_months:
             self.temp = 85.0
 
-        if Weather.key_schema is None:
-            with open(f"{Path(__file__).parents[0]}/schemas/weather_key.json") as f:
-                Weather.key_schema = json.load(f)
 
-        if Weather.value_schema is None:
-            with open(f"{Path(__file__).parents[0]}/schemas/weather_value.json") as f:
-                Weather.value_schema = json.load(f)
 
     def _set_weather(self, month):
         """Returns the current weather"""
@@ -73,7 +75,7 @@ class Weather(Producer):
             "timestamp": curr_time.timestamp()
         }
         value = {
-            "temperature": str(int(self.temp)),
+            "temperature": int(self.temp),
             "status": self.status.name
         }
 
@@ -94,7 +96,11 @@ class Weather(Producer):
             headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
             data=request_string,
         )
-        resp.raise_for_status()
+        try:
+            resp.raise_for_status()
+        except Exception as e:
+            logger.error("Response %s", resp.json())
+            raise e
 
         logger.info(
             "sent weather data to kafka topic %s, temp: %s, status: %s",
