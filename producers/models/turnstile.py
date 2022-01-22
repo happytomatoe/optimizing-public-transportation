@@ -35,9 +35,6 @@ class Turnstile(Producer):
     def run(self, timestamp: datetime.datetime, time_step):
         """Simulates riders entering through the turnstile."""
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
-        key = {
-            "timestamp": timestamp.timestamp()
-        }
 
         value = {
             "station_id": self.station.station_id,
@@ -46,5 +43,8 @@ class Turnstile(Producer):
         }
         logger.debug(f"Station {self.station.station_id}. Turnstile entries {num_entries}")
         for _ in range(num_entries):
+            key = {
+                "timestamp": datetime.datetime.now().timestamp()
+            }
             logger.debug(f"Sending {key}={value} to topic {self.topic_name}")
             self.producer.produce(topic=self.topic_name, key=key, value=value)

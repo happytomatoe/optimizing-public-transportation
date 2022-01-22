@@ -14,6 +14,8 @@ from faust.serializers import codecs
 logger = LoggerFactory.get_logger(__name__)
 
 config = load_config()
+PARTITIONS_COUNT = config['kafka']['broker']['topics']['creation']['num-partitions']
+REPLICAS_COUNT = config['kafka']['broker']['topics']['creation']['num-replicas']
 TOPIC_PREFIX = get_topic_prefix()
 KAFKA_BROKER_URL = config['kafka']['broker']['url']
 
@@ -62,11 +64,14 @@ class TransformedStation(faust.Record):
     line: str
 
 
-app = faust.App("stations-stream", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
+app = faust.App("stations-stream-2", broker=f"kafka://{KAFKA_BROKER_URL}", store="memory://")
 
 topic = app.topic(CONNECT_TOPIC_NAME, value_type=Station)
 
-out_topic = app.topic(f"{TOPIC_PREFIX}.stations.table.v1", partitions=1, value_type=TransformedStation)
+out_topic = app.topic(f"{TOPIC_PREFIX}.stations.table.v1",
+                      partitions=PARTITIONS_COUNT,
+                      replicas=REPLICAS_COUNT,
+                      value_type=TransformedStation)
 
 # Table to map station-> line
 table = app.Table(
