@@ -41,7 +41,8 @@ class Station:
 
     def process_message(self, json_data):
         """Handles arrival and turnstile messages"""
-        self.num_turnstile_entries = json_data["COUNT"]
+        value = json_data["COUNT"]
+        self.num_turnstile_entries = value
 
     def __str__(self) -> str:
         return f" Station( station_id={self.station_id},station_name={self.station_name},order={self.order},dir_a={self.dir_a}," \

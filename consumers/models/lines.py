@@ -28,9 +28,9 @@ class Lines:
                 value = json.loads(value)
             self.process_line_message(message, value["line"])
         elif "TURNSTILE_SUMMARY" == message.topic():
-            logger.debug("Processing turnstile %s - %s", message.key(), message.value())
-            key = json.loads(message.key())
-            self.process_line_message(message, key['LINE'])
+            value = json.loads(message.value())
+            logger.debug("Processing turnstile %s - %s", message.key(), value)
+            self.process_line_message(message, value['LINE'])
         else:
             logger.info("ignoring non-lines message %s", message.topic())
 

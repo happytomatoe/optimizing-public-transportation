@@ -62,7 +62,7 @@ class Line:
     def process_message(self, message):
         """Given a kafka message, extract data"""
 
-        logger.debug(f"Received message for line {message.topic()}. Value {message.value()}")
+        logger.info(f"Received message for line {message.topic()}. Value {message.value()}")
 
         if message.topic() == f"{TOPIC_PREFIX}.stations.table.v1":
             try:
@@ -74,9 +74,8 @@ class Line:
             self._handle_arrival(message)
         elif "TURNSTILE_SUMMARY" == message.topic():
             json_data = json.loads(message.value().decode('utf-8'))
-            key = json.loads(message.key())
-            logger.debug("Turnstile key %s", key)
-            station_id = int(key['STATION_ID'])
+            logger.info("Turnstile value %s", json_data)
+            station_id = json_data['STATION_ID']
             station: Station = self.stations.get(station_id)
             if station is None:
                 logger.info(
