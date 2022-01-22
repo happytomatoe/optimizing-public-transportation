@@ -60,7 +60,8 @@ class Producer:
                 logger.info("topic %s created", self.topic_name)
             except Exception as e:
                 logger.error("failed to create topic %s: %s", self.topic_name, e)
-                raise
+                # Ignore as a topic is already created
+                # raise
 
     @staticmethod
     def time_millis():

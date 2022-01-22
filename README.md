@@ -111,7 +111,3 @@ There are two pieces to the simulation, the `producer` and `consumer`
 `make consumer`
 
 Once the server is running, you may hit `Ctrl+C` at any time to exit.
-
-TODO:
-- try to add key='station_id' to ksql create turnstile statement with older version of ksql and kafka
-- delete key-format from TURNSTILE_SUMMARY 

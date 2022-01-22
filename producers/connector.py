@@ -69,4 +69,3 @@ def configure_connector():
 
 if __name__ == "__main__":
     configure_connector()
-
