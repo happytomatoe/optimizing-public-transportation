@@ -31,37 +31,36 @@ The project consists of two main directories, `producers` and `consumers`.
 The following directory layout indicates the files that the student is responsible for modifying by adding a `*` indicator. Instructions for what is required are present as comments in each file.
 
 ```
-* - Indicates that the student must complete the code in this file
 
 ├── consumers
-│   ├── consumer.py *
-│   ├── faust_stream.py *
-│   ├── ksql.py *
+│   ├── consumer.py 
+│   ├── faust_stream.py 
+│   ├── ksql.py 
 │   ├── models
 │   │   ├── lines.py
-│   │   ├── line.py *
-│   │   ├── station.py *
-│   │   └── weather.py *
+│   │   ├── line.py 
+│   │   ├── station.py 
+│   │   └── weather.py 
 │   ├── requirements.txt
 │   ├── server.py
 │   ├── topic_check.py
 │   └── templates
 │       └── status.html
 └── producers
-    ├── connector.py *
+    ├── connector.py 
     ├── models
     │   ├── line.py
-    │   ├── producer.py *
+    │   ├── producer.py 
     │   ├── schemas
     │   │   ├── arrival_key.json
-    │   │   ├── arrival_value.json *
+    │   │   ├── arrival_value.json 
     │   │   ├── turnstile_key.json
-    │   │   ├── turnstile_value.json *
+    │   │   ├── turnstile_value.json 
     │   │   ├── weather_key.json
-    │   │   └── weather_value.json *
-    │   ├── station.py *
+    │   │   └── weather_value.json 
+    │   ├── station.py 
     │   ├── train.py
-    │   ├── turnstile.py *
+    │   ├── turnstile.py 
     │   ├── turnstile_hardware.py
     │   └── weather.py *
     ├── requirements.txt
