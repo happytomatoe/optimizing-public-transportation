@@ -18,8 +18,7 @@ Our architecture looks like this:
 ![Project Architecture](images/diagram.png)
 
 
-### Documentation
-In addition to the course content you have already reviewed, you may find the following examples and documentation helpful in completing this assignment:
+### Helpfull documentation
 
 * [Confluent Python Client Documentation](https://docs.confluent.io/current/clients/confluent-kafka-python/#)
 * [Confluent Python Client Usage and Examples](https://github.com/confluentinc/confluent-kafka-python#usage)
